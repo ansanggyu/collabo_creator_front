@@ -1,5 +1,5 @@
-import {IAdminlogin, ISigninParam} from "../types/icreatorlogin.ts";
-import jwtAxios from "../util/jwtUtil.ts";
+import {IAdminlogin, ISigninParam} from "../../types/icreatorlogin.ts";
+import jwtAxios from "../../util/jwtUtil.ts";
 
 const host = 'http://10.10.10.177:8080/api/adminlogin'
 

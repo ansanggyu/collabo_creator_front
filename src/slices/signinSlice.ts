@@ -3,11 +3,11 @@ import { IAdminlogin, ISigninParam } from "../types/icreatorlogin.ts";
 import { postSignin } from "../apis/creatorlogin/creatorloginAPI.ts";
 
 const initialState: IAdminlogin = {
-    adminId: '',
+    createrId: '',
     pw: '',
     accessToken: '',
     refreshToken: '',
-    adminName: ''
+    creatorName: ''
 };
 
 // `postSigninThunk`: 로그인 API 호출
@@ -25,11 +25,11 @@ const signinSlice = createSlice({
             const { adminId, pw, accessToken, refreshToken, adminName } = action.payload;
 
             // 상태 갱신
-            state.adminId = adminId || state.adminId;
+            state.createrId = adminId || state.createrId;
             state.pw = pw || state.pw;
             state.accessToken = accessToken || state.accessToken;
             state.refreshToken = refreshToken || state.refreshToken;
-            state.adminName = adminName || state.adminName;
+            state.creatorName = adminName || state.creatorName;
         },
         signout: () => {
             // 상태 초기화
@@ -43,11 +43,11 @@ const signinSlice = createSlice({
                 const result = action.payload; // API 응답 데이터
                 console.log("extraReducer) API just called successfully...");
                 if (result) {
-                    state.adminId = result.adminId;
+                    state.createrId = result.createrId;
                     state.pw = result.pw;
                     state.accessToken = result.accessToken;
                     state.refreshToken = result.refreshToken;
-                    state.adminName = result.adminName;
+                    state.creatorName = result.creatorName;
                 }
             })
             // postSigninThunk가 요청 중일 때

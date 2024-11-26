@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { Cookies } from "react-cookie";
-import { refreshRequest } from "../apis/creatorlogin.tsx";
+import { refreshRequest } from "../apis/creatorlogin/creatorloginAPI.ts";
 
 const cookies = new Cookies();
 const jwtAxios = axios.create();
