@@ -29,8 +29,7 @@ function AsideMenuComponent() {
         {
             mainName: "주문 관리",
             subMenus: [
-                { name: "주문 내역", toPath: "/list" },
-                { name: "환불 처리", toPath: "/refund" },
+                { name: "주문 내역", toPath: "/list" }
             ],
             basicPath: "/order",
             iconName: "order.png",
