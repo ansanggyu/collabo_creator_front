@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import LoadingPage from "../pages/LoadingPage";
 
-const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
+const DashboardPage = lazy(() => import("../pages/mainpage/CreatorMainPage.tsx"));
 
 const dashboardRouter = {
     path: "/",
