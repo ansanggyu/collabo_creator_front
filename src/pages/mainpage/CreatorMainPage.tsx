@@ -1,10 +1,11 @@
 import BasicLayout from "../../layouts/BasicLayout.tsx";
+import DashboardComponent from "../../components/dashboard/DashboardComponent.tsx";
 
 function AdminMainPage() {
     return (
         <BasicLayout>
-            <div>
-                -메인페이지-
+            <div className="container mx-auto">
+                <DashboardComponent />
             </div>
         </BasicLayout>
     );
