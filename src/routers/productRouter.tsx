@@ -35,7 +35,7 @@ const productRouter = {
             ),
         },
         {
-            path: "detail/:id/modify",
+            path: "detail/modify/:id",
             element: (
                 <Suspense fallback={<LoadingPage />}>
                     <ModifyProductPage />
