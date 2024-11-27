@@ -1,4 +1,13 @@
+import {useNavigate} from "react-router-dom";
+
 function ProductListComponent() {
+
+    const navigate = useNavigate();
+
+    const goToDetail = (id: number) => {
+        navigate(`/product/detail/${id}`);
+    };
+
     const products = [
         { id: 1, name: "상품 1", stock: 10, price: 10000 },
         { id: 2, name: "상품 2", stock: 5, price: 20000 },
@@ -46,16 +55,12 @@ function ProductListComponent() {
                                 재고: {product.stock > 0 ? `${product.stock}개` : "품절"}
                             </p>
                         </div>
-
-                        {/* 하단 액션 버튼 */}
-                        <div className="p-4 bg-gray-100 flex justify-end space-x-2">
-                            <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
-                                Edit
-                            </button>
-                            <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                                Delete
-                            </button>
-                        </div>
+                        <button
+                            className="bg-blue-500 text-white p-1 rounded"
+                            onClick={() => goToDetail(product.id)}
+                        >
+                            상세 보기
+                        </button>
                     </div>
                 ))}
             </div>

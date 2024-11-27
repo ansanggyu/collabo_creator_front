@@ -35,12 +35,12 @@ function AsideMenuComponent() {
             iconName: "order.png",
         },
         {
-            mainName: "리뷰 및 피드백 관리",
+            mainName: "리뷰 및 QnA 관리",
             subMenus: [
-                { name: "리뷰 목록", toPath: "/list" },
-                { name: "리뷰 답변", toPath: "/reply/:id" },
+                { name: "리뷰 목록", toPath: "review/list" },
+                { name: "QnA 목록", toPath: "qna/list" },
             ],
-            basicPath: "/review",
+            basicPath: "/",
             iconName: "review.png",
         },
         {
