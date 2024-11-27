@@ -1,29 +1,70 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function InventoryComponent() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filter, setFilter] = useState("all");
+    const [dateRange, setDateRange] = useState({ start: "", end: "" });
+    const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+    const navigate = useNavigate();
 
     const inventoryData = [
-        { id: 1, name: "상품 1", price: 10000, stock: 10, thumbnail: "" },
-        { id: 2, name: "상품 2", price: 20000, stock: 2, thumbnail: "" },
-        { id: 3, name: "상품 3", price: 15000, stock: 0, thumbnail: "" },
-        { id: 4, name: "상품 4", price: 50000, stock: 5, thumbnail: "" },
+        { id: 1, name: "상품 1", price: 10000, stock: 10, thumbnail: "", date: "2024-11-01" },
+        { id: 2, name: "상품 2", price: 20000, stock: 2, thumbnail: "", date: "2024-11-20" },
+        { id: 3, name: "상품 3", price: 15000, stock: 0, thumbnail: "", date: "2024-11-15" },
+        { id: 4, name: "상품 4", price: 50000, stock: 5, thumbnail: "", date: "2024-11-10" },
     ];
 
-    // 필터링된 데이터
-    const filteredData = inventoryData.filter((product) => {
-        const matchesSearch = product.name.includes(searchTerm);
-        if (filter === "low-stock") return product.stock > 0 && product.stock <= 5 && matchesSearch;
-        if (filter === "out-of-stock") return product.stock === 0 && matchesSearch;
-        return matchesSearch; // "all"
+    const isWithinDateRange = (productDate) => {
+        if (!dateRange.start && !dateRange.end) return true;
+        const date = new Date(productDate);
+        const startDate = dateRange.start ? new Date(dateRange.start) : null;
+        const endDate = dateRange.end ? new Date(dateRange.end) : null;
+
+        if (startDate && date < startDate) return false;
+        if (endDate && date > endDate) return false;
+        return true;
+    };
+
+    const sortedData = [...inventoryData].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+        const order = sortConfig.direction === "asc" ? 1 : -1;
+
+        if (sortConfig.key === "price" || sortConfig.key === "stock") {
+            return (a[sortConfig.key] - b[sortConfig.key]) * order;
+        }
+        if (sortConfig.key === "date") {
+            return (new Date(a.date) - new Date(b.date)) * order;
+        }
+        return 0;
     });
+
+    const filteredData = sortedData.filter((product) => {
+        const matchesSearch = product.name.includes(searchTerm);
+        const matchesDate = isWithinDateRange(product.date);
+
+        if (filter === "low-stock") return product.stock > 0 && product.stock <= 5 && matchesSearch && matchesDate;
+        if (filter === "out-of-stock") return product.stock === 0 && matchesSearch && matchesDate;
+        return matchesSearch && matchesDate;
+    });
+
+    const handleSort = (key) => {
+        setSortConfig((prevState) => ({
+            key,
+            direction: prevState.key === key && prevState.direction === "asc" ? "desc" : "asc",
+        }));
+    };
+
+    const getSortArrow = (key) => {
+        if (sortConfig.key === key) {
+            return sortConfig.direction === "asc" ? "↑" : "↓";
+        }
+        return "↕"; // 기본 상태 화살표
+    };
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            {/* 검색 및 필터 섹션 */}
-            <div className="flex justify-between items-center mb-6">
-                {/* 검색창 */}
+            <div className="flex flex-col space-y-4 mb-6">
                 <input
                     type="text"
                     placeholder="상품명 검색"
@@ -31,8 +72,21 @@ function InventoryComponent() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full max-w-md border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-
-                {/* 필터 버튼 */}
+                <div className="flex space-x-4 items-center">
+                    <input
+                        type="date"
+                        value={dateRange.start}
+                        onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
+                        className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <span>~</span>
+                    <input
+                        type="date"
+                        value={dateRange.end}
+                        onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
+                        className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                </div>
                 <div className="flex space-x-2">
                     <button
                         onClick={() => setFilter("all")}
@@ -61,10 +115,8 @@ function InventoryComponent() {
                 </div>
             </div>
 
-            {/* 상품 테이블 */}
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
-                    {/* 테이블 헤더 */}
                     <thead className="bg-gray-100">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -73,35 +125,41 @@ function InventoryComponent() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             상품명
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            가격
+                        <th
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            onClick={() => handleSort("price")}
+                        >
+                            가격 {getSortArrow("price")}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            재고
+                        <th
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            onClick={() => handleSort("stock")}
+                        >
+                            재고 {getSortArrow("stock")}
+                        </th>
+                        <th
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                            onClick={() => handleSort("date")}
+                        >
+                            등록일 {getSortArrow("date")}
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                             액션
                         </th>
                     </tr>
                     </thead>
-
-                    {/* 테이블 본문 */}
                     <tbody className="bg-white divide-y divide-gray-200">
                     {filteredData.map((product) => (
                         <tr key={product.id}>
-                            {/* 썸네일 */}
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="h-10 w-10 bg-gray-200 flex items-center justify-center rounded-md">
                                     <span className="text-gray-400 text-sm">No Image</span>
                                 </div>
                             </td>
-                            {/* 상품명 */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{product.name}</td>
-                            {/* 가격 */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                 {product.price.toLocaleString()}원
                             </td>
-                            {/* 재고 */}
                             <td
                                 className={`px-6 py-4 whitespace-nowrap text-sm ${
                                     product.stock === 0
@@ -113,10 +171,14 @@ function InventoryComponent() {
                             >
                                 {product.stock > 0 ? `${product.stock}개` : "품절"}
                             </td>
-                            {/* 액션 버튼 */}
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <button className="text-blue-600 hover:text-blue-800">Edit</button>
-                                <button className="text-red-600 hover:text-red-800">Delete</button>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{product.date}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button
+                                    onClick={() => navigate(`/product/detail/${product.id}`)}
+                                    className="text-blue-600 hover:text-blue-800"
+                                >
+                                    Edit
+                                </button>
                             </td>
                         </tr>
                     ))}
@@ -124,7 +186,6 @@ function InventoryComponent() {
                 </table>
             </div>
 
-            {/* 데이터가 없을 때 */}
             {filteredData.length === 0 && (
                 <p className="text-center text-gray-500 mt-6">해당 조건에 맞는 상품이 없습니다.</p>
             )}

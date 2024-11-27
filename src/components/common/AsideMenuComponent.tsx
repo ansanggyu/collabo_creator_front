@@ -54,15 +54,6 @@ function AsideMenuComponent() {
             iconName: "analytics.png",
         },
         {
-            mainName: "상품 카테고리 관리",
-            subMenus: [
-                { name: "카테고리 추가", toPath: "/add" },
-                { name: "카테고리 목록", toPath: "/list" },
-            ],
-            basicPath: "/category",
-            iconName: "category.png",
-        },
-        {
             mainName: "오프라인 매장 관리",
             subMenus: [{ name: "매장 소개", toPath: "/" }],
             basicPath: "/offlinestore",
