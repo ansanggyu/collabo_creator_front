@@ -1,17 +1,17 @@
-import { lazy, Suspense } from "react";
+import {lazy, Suspense} from "react";
 import LoadingPage from "../pages/LoadingPage";
 
-const ReviewListPage = lazy(() => import("../pages/review/ReviewListPage"));
-const ReviewDetailPage = lazy(() => import("../pages/review/ReviewDetailPage"));
+const QnAListPage = lazy(() => import("../pages/qna/QnAListPage.tsx"))
+const QnADetailPage = lazy(() => import("../pages/qna/QnADetailPage.tsx"))
 
 const reviewRouter = {
-    path: "/review",
+    path: "/qna",
     children: [
         {
             path: "list",
             element: (
                 <Suspense fallback={<LoadingPage />}>
-                    <ReviewListPage />
+                    <QnAListPage />
                 </Suspense>
             ),
         },
@@ -19,7 +19,7 @@ const reviewRouter = {
             path: "detail/:id",
             element: (
                 <Suspense fallback={<LoadingPage />}>
-                    <ReviewDetailPage />
+                    <QnADetailPage />
                 </Suspense>
             ),
         },
