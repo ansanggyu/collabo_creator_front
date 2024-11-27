@@ -7,9 +7,9 @@ const mockProductDetail = {
     description: "최신형 스마트폰입니다.",
     price: 1000000,
     stock: 50,
-    imageUrl: "https://via.placeholder.com/400",
     category: "전자제품",
     status: "판매중",
+    images: [],
 };
 
 function ModifyProductComponent() {
@@ -17,11 +17,20 @@ function ModifyProductComponent() {
     const navigate = useNavigate();
     const [product, setProduct] = useState(mockProductDetail);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
-        const { name, value } = e.target;
-        setProduct({ ...product, [name]: value });
+    const handleImageUpload = (file: File, index: number) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const updatedImages = [...product.images];
+            updatedImages[index] = { id: index + 1, url: reader.result, ord: index + 1 };
+            setProduct({ ...product, images: updatedImages });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleImageDelete = (index: number) => {
+        const updatedImages = [...product.images];
+        updatedImages[index] = undefined; // 해당 칸 비우기
+        setProduct({ ...product, images: updatedImages });
     };
 
     const handleSave = (e: React.FormEvent) => {
@@ -41,92 +50,134 @@ function ModifyProductComponent() {
                 <p className="text-sm text-gray-600">상품 정보를 수정하고 저장하세요.</p>
             </div>
 
+            {/* 이미지 관리 */}
+            <div className="bg-white shadow-md rounded-lg p-4 mb-4">
+                <h2 className="text-lg font-semibold text-gray-800 mb-2">이미지 관리 (최대 6개)</h2>
+                <div className="grid grid-cols-3 gap-4">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                        <div
+                            key={index}
+                            className="relative flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg"
+                        >
+                            {product.images[index] ? (
+                                <>
+                                    <img
+                                        src={product.images[index]?.url as string}
+                                        alt={`이미지 ${index + 1}`}
+                                        className="w-full h-full object-cover rounded-lg"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleImageDelete(index)}
+                                        className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                                    >
+                                        X
+                                    </button>
+                                </>
+                            ) : (
+                                <label
+                                    htmlFor={`image-upload-${index}`}
+                                    className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-gray-400"
+                                >
+                                    <span className="text-sm">{index + 1}</span>
+                                    <span className="text-xs">이미지 추가</span>
+                                    <input
+                                        id={`image-upload-${index}`}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) =>
+                                            e.target.files && handleImageUpload(e.target.files[0], index)
+                                        }
+                                    />
+                                </label>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/* 수정 가능한 상세 정보 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 상품 이미지 */}
-                <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                    <div className="bg-gray-100 p-2 text-center text-sm text-gray-600">
-                        상품 이미지
-                    </div>
-                    <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="w-full h-60 object-cover"
+                {/* 상품명 */}
+                <div className="bg-white shadow-md rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">상품명</p>
+                    <input
+                        type="text"
+                        name="name"
+                        value={product.name}
+                        onChange={(e) =>
+                            setProduct({ ...product, name: e.target.value })
+                        }
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
+                        required
                     />
                 </div>
 
-                {/* 수정 가능한 상품 정보 */}
-                <div className="grid grid-cols-2 gap-4">
-                    {/* 상품명 */}
-                    <div className="bg-white shadow-md rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-1">상품명</p>
-                        <input
-                            type="text"
-                            name="name"
-                            value={product.name}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                            required
-                        />
-                    </div>
+                {/* 상품 가격 */}
+                <div className="bg-white shadow-md rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">상품 가격</p>
+                    <input
+                        type="number"
+                        name="price"
+                        value={product.price}
+                        onChange={(e) =>
+                            setProduct({ ...product, price: parseInt(e.target.value, 10) })
+                        }
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
+                        required
+                    />
+                </div>
 
-                    {/* 상품 가격 */}
-                    <div className="bg-white shadow-md rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-1">상품 가격</p>
-                        <input
-                            type="number"
-                            name="price"
-                            value={product.price}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                            required
-                        />
-                    </div>
+                {/* 카테고리 */}
+                <div className="bg-white shadow-md rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">카테고리</p>
+                    <select
+                        name="category"
+                        value={product.category}
+                        onChange={(e) =>
+                            setProduct({ ...product, category: e.target.value })
+                        }
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
+                    >
+                        <option value="전자제품">전자제품</option>
+                        <option value="의류">의류</option>
+                        <option value="가구">가구</option>
+                        <option value="식품">식품</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
 
-                    {/* 카테고리 */}
-                    <div className="bg-white shadow-md rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-1">카테고리</p>
-                        <select
-                            name="category"
-                            value={product.category}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        >
-                            <option value="전자제품">전자제품</option>
-                            <option value="의류">의류</option>
-                            <option value="가구">가구</option>
-                            <option value="식품">식품</option>
-                            <option value="기타">기타</option>
-                        </select>
-                    </div>
+                {/* 판매 상태 */}
+                <div className="bg-white shadow-md rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-1">판매 상태</p>
+                    <select
+                        name="status"
+                        value={product.status}
+                        onChange={(e) =>
+                            setProduct({ ...product, status: e.target.value })
+                        }
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
+                    >
+                        <option value="판매중">판매중</option>
+                        <option value="판매중지">판매중지</option>
+                        <option value="품절">품절</option>
+                    </select>
+                </div>
 
-                    {/* 판매 상태 */}
-                    <div className="bg-white shadow-md rounded-lg p-4">
-                        <p className="text-sm text-gray-600 mb-1">판매 상태</p>
-                        <select
-                            name="status"
-                            value={product.status}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        >
-                            <option value="판매중">판매중</option>
-                            <option value="판매중지">판매중지</option>
-                            <option value="품절">품절</option>
-                        </select>
-                    </div>
-
-                    {/* 재고 수량 */}
-                    <div className="bg-white shadow-md rounded-lg p-4 col-span-2">
-                        <p className="text-sm text-gray-600 mb-1">재고 수량</p>
-                        <input
-                            type="number"
-                            name="stock"
-                            value={product.stock}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                            required
-                        />
-                    </div>
+                {/* 재고 수량 */}
+                <div className="bg-white shadow-md rounded-lg p-4 col-span-2">
+                    <p className="text-sm text-gray-600 mb-1">재고 수량</p>
+                    <input
+                        type="number"
+                        name="stock"
+                        value={product.stock}
+                        onChange={(e) =>
+                            setProduct({ ...product, stock: parseInt(e.target.value, 10) })
+                        }
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
+                        required
+                    />
                 </div>
             </div>
 
@@ -138,7 +189,9 @@ function ModifyProductComponent() {
                 <textarea
                     name="description"
                     value={product.description}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                        setProduct({ ...product, description: e.target.value })
+                    }
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
                     rows={4}
                     required

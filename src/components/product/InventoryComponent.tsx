@@ -15,7 +15,7 @@ function InventoryComponent() {
         { id: 4, name: "상품 4", price: 50000, stock: 5, thumbnail: "", date: "2024-11-10" },
     ];
 
-    const isWithinDateRange = (productDate) => {
+    const isWithinDateRange = (productDate :any) => {
         if (!dateRange.start && !dateRange.end) return true;
         const date = new Date(productDate);
         const startDate = dateRange.start ? new Date(dateRange.start) : null;
@@ -48,14 +48,14 @@ function InventoryComponent() {
         return matchesSearch && matchesDate;
     });
 
-    const handleSort = (key) => {
+    const handleSort = (key:any) => {
         setSortConfig((prevState) => ({
             key,
             direction: prevState.key === key && prevState.direction === "asc" ? "desc" : "asc",
         }));
     };
 
-    const getSortArrow = (key) => {
+    const getSortArrow = (key:any) => {
         if (sortConfig.key === key) {
             return sortConfig.direction === "asc" ? "↑" : "↓";
         }

@@ -6,15 +6,24 @@ const mockProductDetail = {
     description: "최신형 스마트폰으로 강력한 성능과 세련된 디자인을 자랑합니다.",
     price: 1000000,
     stock: 50,
-    imageUrl: "https://via.placeholder.com/400",
     category: "전자제품",
     status: "판매중",
+    images: [
+        { id: 1, url: "https://via.placeholder.com/400", ord: 1 },
+        { id: 2, url: "https://via.placeholder.com/300", ord: 2 },
+        { id: 3, url: "https://via.placeholder.com/300", ord: 3 },
+    ],
 };
 
 function ProductDetailComponent() {
     const { id } = useParams();
     const navigate = useNavigate();
     const product = mockProductDetail;
+
+    // `ord` 기준으로 정렬된 이미지
+    const sortedImages = product.images.sort((a, b) => a.ord - b.ord);
+    const mainImage = sortedImages[0];
+    const thumbnailImages = sortedImages.slice(1);
 
     const handleEdit = () => {
         navigate(`/product/detail/modify/${id}`);
@@ -40,10 +49,20 @@ function ProductDetailComponent() {
                         상품 이미지
                     </div>
                     <img
-                        src={product.imageUrl}
-                        alt={product.name}
+                        src={mainImage.url}
+                        alt="주요 상품 이미지"
                         className="w-full h-60 object-cover"
                     />
+                    <div className="flex justify-center space-x-2 mt-2 p-2 bg-gray-100">
+                        {thumbnailImages.map((image) => (
+                            <img
+                                key={image.id}
+                                src={image.url}
+                                alt={`썸네일 이미지 ${image.id}`}
+                                className="w-16 h-16 object-cover rounded-md cursor-pointer hover:ring-2 hover:ring-blue-500"
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 {/* 상품 정보 */}

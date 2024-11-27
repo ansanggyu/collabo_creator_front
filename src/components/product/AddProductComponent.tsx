@@ -8,22 +8,24 @@ function AddProductComponent() {
     const [productPrice, setProductPrice] = useState("");
     const [productStock, setProductStock] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]); // 이미지 미리보기 배열
+    const [images, setImages] = useState<(string | undefined)[]>(Array(6).fill(undefined)); // 이미지 최대 6개
 
     // 이미지 업로드 핸들러
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            const previews = Array.from(files).map((file) => {
-                return URL.createObjectURL(file); // 파일을 URL로 변환
-            });
-            setImagePreviews((prev) => [...prev, ...previews]); // 이전 미리보기와 합침
-        }
+    const handleImageUpload = (file: File, index: number) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const updatedImages = [...images];
+            updatedImages[index] = reader.result as string; // Base64로 변환
+            setImages(updatedImages);
+        };
+        reader.readAsDataURL(file);
     };
 
     // 이미지 삭제 핸들러
     const handleImageDelete = (index: number) => {
-        setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+        const updatedImages = [...images];
+        updatedImages[index] = undefined; // 해당 박스를 비우기
+        setImages(updatedImages);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -35,7 +37,7 @@ function AddProductComponent() {
             productPrice,
             productStock,
             selectedCategory,
-            imagePreviews, // 업로드된 이미지 데이터
+            images, // 업로드된 이미지 데이터
         });
     };
 
@@ -125,40 +127,50 @@ function AddProductComponent() {
 
                 {/* 이미지 업로드 */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">이미지 업로드</label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleImageUpload}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    />
-                </div>
-
-                {/* 이미지 미리보기 */}
-                {imagePreviews.length > 0 && (
-                    <div className="mt-4">
-                        <p className="text-sm font-medium text-gray-700 mb-2">이미지 미리보기:</p>
-                        <div className="grid grid-cols-3 gap-4">
-                            {imagePreviews.map((preview, index) => (
-                                <div key={index} className="relative">
-                                    <img
-                                        src={preview}
-                                        alt={`미리보기 ${index + 1}`}
-                                        className="w-full h-24 object-cover rounded-lg border border-gray-300"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleImageDelete(index)}
-                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">이미지 업로드 (최대 6개)</label>
+                    <div className="grid grid-cols-3 gap-4">
+                        {images.map((image, index) => (
+                            <div
+                                key={index}
+                                className="relative flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg"
+                            >
+                                {image ? (
+                                    <>
+                                        <img
+                                            src={image}
+                                            alt={`이미지 ${index + 1}`}
+                                            className="w-full h-full object-cover rounded-lg"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleImageDelete(index)}
+                                            className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                                        >
+                                            X
+                                        </button>
+                                    </>
+                                ) : (
+                                    <label
+                                        htmlFor={`image-upload-${index}`}
+                                        className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-gray-400"
                                     >
-                                        ✕
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
+                                        <span className="text-sm">{index + 1}</span>
+                                        <span className="text-xs">이미지 추가</span>
+                                        <input
+                                            id={`image-upload-${index}`}
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) =>
+                                                e.target.files && handleImageUpload(e.target.files[0], index)
+                                            }
+                                        />
+                                    </label>
+                                )}
+                            </div>
+                        ))}
                     </div>
-                )}
+                </div>
 
                 {/* 등록 버튼 */}
                 <div className="text-right">
@@ -183,7 +195,7 @@ function AddProductComponent() {
     );
 }
 
-// 모달 컴포넌트
+// 모달 컴포넌트 (기존과 동일)
 function CategoryListModal({
                                onClose,
                                categories,
