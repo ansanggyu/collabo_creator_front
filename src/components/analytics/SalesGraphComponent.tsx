@@ -21,7 +21,7 @@ function SalesGraphComponent() {
     });
 
     // 더미 데이터
-    const salesData = {
+    const salesData: { [key: string]: number[] } = {
         "전체": [500, 700, 800, 600, 900],
         "태블릿": [150, 150, 100, 100, 100],
     };
@@ -54,6 +54,7 @@ function SalesGraphComponent() {
             {/* 필터 */}
             <div className="grid grid-cols-4 gap-4 mb-6">
                 <div>
+                    {/*카테고리 먼저 선택하고, 카테고리에 맞는 상품을 선택 할 수 있어야 함.*/}
                     <label className="block text-sm font-bold mb-2">상품 선택</label>
                     <select
                         value={selectedProduct}

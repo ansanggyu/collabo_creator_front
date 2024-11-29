@@ -1,14 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { addProduct, getCategoriesByCreator } from "../../apis/product/productAPI.ts";
+import { IProductRequest, IUserCategory } from "../../types/iproduct";
+import Cookies from "js-cookie";
+
+const initialState: IProductRequest = {
+    productName: "",
+    productPrice: 0,
+    stock: 0,
+    productDescription: "",
+    productStatus: 1,
+    categoryNo: 0,
+    creatorId: "",
+    productImages: [],
+};
 
 function AddProductComponent() {
-    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false); // 모달 상태
-    const [categories, setCategories] = useState(["전자제품", "의류", "가구", "식품", "기타"]); // 카테고리 리스트
-    const [productName, setProductName] = useState("");
-    const [productDescription, setProductDescription] = useState("");
-    const [productPrice, setProductPrice] = useState("");
-    const [productStock, setProductStock] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
+    const [creatorId, setCreatorId] = useState<string | null>(null); // 쿠키에서 가져올 creatorId
+    const [productName, setProductName] = useState(initialState.productName);
+    const [productDescription, setProductDescription] = useState(initialState.productDescription);
+    const [productPrice, setProductPrice] = useState(initialState.productPrice.toString());
+    const [productStock, setProductStock] = useState(initialState.stock.toString());
+    const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+    const [categories, setCategories] = useState<IUserCategory[]>([]);
     const [images, setImages] = useState<(string | undefined)[]>(Array(6).fill(undefined)); // 이미지 최대 6개
+
+    // 쿠키 생성 (임시 테스트용)
+    useEffect(() => {
+        const existingCreatorId = Cookies.get("creatorId");
+        if (!existingCreatorId) {
+            Cookies.set("creatorId", "creator12", { expires: 7, path: "/" });
+            console.log("쿠키 생성: creatorId = creator10");
+        }
+    }, []);
+
+    // 페이지 로드 시 쿠키에서 creatorId 가져오기
+    useEffect(() => {
+        const cookieCreatorId = Cookies.get("creatorId");
+        if (!cookieCreatorId) {
+            alert("creatorId 쿠키가 없습니다. 접근이 제한됩니다.");
+            throw new Error("쿠키에서 creatorId를 가져올 수 없습니다.");
+        }
+        setCreatorId(cookieCreatorId);
+    }, []);
+
+    // 카테고리 불러오기
+    useEffect(() => {
+        const fetchCategories = async () => {
+            if (!creatorId) return; // creatorId가 없으면 실행하지 않음
+            try {
+                const result = await getCategoriesByCreator(creatorId);
+                setCategories(result);
+            } catch (error) {
+                console.error("카테고리 불러오기 실패:", error);
+            }
+        };
+
+        fetchCategories();
+    }, [creatorId]);
 
     // 이미지 업로드 핸들러
     const handleImageUpload = (file: File, index: number) => {
@@ -28,21 +76,51 @@ function AddProductComponent() {
         setImages(updatedImages);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // 폼 제출 핸들러
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        alert("상품이 등록되었습니다!");
-        console.log({
+
+        // 입력 데이터 유효성 검사
+        if (!productName || !productPrice || !productStock || selectedCategory === null || !creatorId) {
+            alert("모든 필드를 입력해주세요!");
+            return;
+        }
+
+        // 업로드된 이미지 필터링
+        const filteredImages = images.filter((image) => image !== undefined) as string[];
+
+        // 데이터 가공
+        const productData: IProductRequest = {
             productName,
             productDescription,
-            productPrice,
-            productStock,
-            selectedCategory,
-            images, // 업로드된 이미지 데이터
-        });
+            productPrice: Number(productPrice),
+            stock: Number(productStock),
+            productStatus: 1, // 활성 상태 (1)
+            categoryNo: selectedCategory, // 카테고리 번호
+            creatorId, // 쿠키에서 가져온 creatorId
+            productImages: filteredImages, // 업로드된 이미지 데이터
+        };
+
+        try {
+            // 상품 등록 API 호출
+            await addProduct(productData);
+            alert("상품이 성공적으로 등록되었습니다!");
+            resetForm();
+        } catch (error) {
+            console.error("상품 등록 실패:", error);
+            alert("상품 등록에 실패했습니다.");
+        }
     };
 
-    const openCategoryModal = () => setIsCategoryModalOpen(true);
-    const closeCategoryModal = () => setIsCategoryModalOpen(false);
+    // 폼 초기화 함수
+    const resetForm = () => {
+        setProductName(initialState.productName);
+        setProductDescription(initialState.productDescription);
+        setProductPrice(initialState.productPrice.toString());
+        setProductStock(initialState.stock.toString());
+        setSelectedCategory(null);
+        setImages(Array(6).fill(undefined));
+    };
 
     return (
         <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
@@ -99,30 +177,19 @@ function AddProductComponent() {
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">카테고리</label>
                     <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        value={selectedCategory ?? ""}
+                        onChange={(e) => setSelectedCategory(Number(e.target.value))}
                         className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
                     >
                         <option value="" disabled>
                             카테고리를 선택하세요
                         </option>
-                        {categories.map((category, index) => (
-                            <option key={index} value={category}>
-                                {category}
+                        {categories.map((category) => (
+                            <option key={category.categoryNo} value={category.categoryNo}>
+                                {category.categoryName}
                             </option>
                         ))}
                     </select>
-                </div>
-
-                {/* 카테고리 관리 버튼 */}
-                <div className="mt-4 text-right">
-                    <button
-                        type="button"
-                        onClick={openCategoryModal}
-                        className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-                    >
-                        카테고리 관리
-                    </button>
                 </div>
 
                 {/* 이미지 업로드 */}
@@ -182,86 +249,6 @@ function AddProductComponent() {
                     </button>
                 </div>
             </form>
-
-            {/* 카테고리 관리 모달 */}
-            {isCategoryModalOpen && (
-                <CategoryListModal
-                    onClose={closeCategoryModal}
-                    categories={categories}
-                    setCategories={setCategories}
-                />
-            )}
-        </div>
-    );
-}
-
-// 모달 컴포넌트 (기존과 동일)
-function CategoryListModal({
-                               onClose,
-                               categories,
-                               setCategories,
-                           }: {
-    onClose: () => void;
-    categories: string[];
-    setCategories: React.Dispatch<React.SetStateAction<string[]>>;
-}) {
-    const [newCategory, setNewCategory] = useState("");
-
-    const handleAddCategory = () => {
-        if (newCategory && !categories.includes(newCategory)) {
-            setCategories([...categories, newCategory]);
-            setNewCategory("");
-        }
-    };
-
-    const handleDelete = (category: string) => {
-        setCategories(categories.filter((c) => c !== category));
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 w-96">
-                <h1 className="text-2xl font-bold mb-4">카테고리 관리</h1>
-                <div className="space-y-4">
-                    <input
-                        type="text"
-                        placeholder="새 카테고리 이름"
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    />
-                    <button
-                        className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        onClick={handleAddCategory}
-                    >
-                        카테고리 추가
-                    </button>
-                </div>
-                <ul className="mt-4 space-y-2">
-                    {categories.map((category, index) => (
-                        <li
-                            key={index}
-                            className="flex justify-between items-center p-2 border-b"
-                        >
-                            <span>{category}</span>
-                            <button
-                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                                onClick={() => handleDelete(category)}
-                            >
-                                삭제
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-                <div className="text-right mt-4">
-                    <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-                        onClick={onClose}
-                    >
-                        닫기
-                    </button>
-                </div>
-            </div>
         </div>
     );
 }
