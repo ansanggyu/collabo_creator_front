@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import { getProductList } from "../../apis/product/productAPI.ts";
 import { IProduct } from "../../types/iproduct.ts";
 import PageComponent from "../common/PageComponent.tsx";
@@ -48,12 +48,12 @@ function ProductListComponent() {
                 selectedStatus === "전체" || product.productStatus === selectedStatus;
             const matchesCategory =
                 selectedCategory === "전체" || product.categoryName === selectedCategory;
-            return matchesSearch && matchesStatus && matchesCategory;
+            return matchesSearch && matchesStatus && matchesCategory
         }) || [];
 
-    const goToDetail = (id: number) => {
-        navigate(`/product/detail/${id}`);
-    };
+    const goToDetail = (productNo: number) => {
+        navigate(`/product/detail/${productNo}`)
+    }
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">

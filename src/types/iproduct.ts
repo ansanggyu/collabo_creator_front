@@ -1,20 +1,21 @@
 export interface IProduct{
 
-    productNo ?: number,
-    productName ?: string,
-    productPrice ?: number,
-    stock ?: number,
-    productDescription ?: string,
-    productStatus ?:number,
-    createdAt ?: string,
+    productNo : number,
+    productName : string,
+    productPrice : number,
+    stock : number,
+    rating ?: number,
+    productDescription : string,
+    productStatus :string,
+    createdAt : string,
 
-    categoryNo ?: number,
-    categoryName ?: string,
+    categoryNo : number,
+    categoryName : string,
 
-    creatorName ?: string,
+    creatorName : string,
 
-    productImageOrd ?: number,
-    productImageUrl ?: string
+    productImageOrd : number,
+    productImageUrl : string
 
 }
 

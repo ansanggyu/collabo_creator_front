@@ -1,40 +1,49 @@
-import { useParams, useNavigate } from "react-router-dom";
+import {useParams, useNavigate} from "react-router-dom";
+import {IProduct} from "../../types/iproduct.ts";
+import {useEffect, useState} from "react";
+import LoadingPage from "../../pages/LoadingPage.tsx";
+import {getProductOne} from "../../apis/product/productAPI.ts";
 
-const mockProductDetail = {
-    id: 1,
-    name: "스마트폰",
-    description: "최신형 스마트폰으로 강력한 성능과 세련된 디자인을 자랑합니다.",
-    price: 1000000,
-    stock: 50,
-    category: "전자제품",
-    status: "판매중",
-    images: [
-        { id: 1, url: "https://via.placeholder.com/400", ord: 1 },
-        { id: 2, url: "https://via.placeholder.com/300", ord: 2 },
-        { id: 3, url: "https://via.placeholder.com/300", ord: 3 },
-    ],
-};
+const initialState : IProduct = {
+    productNo: 0,
+    productName: "",
+    productDescription: "",
+    productPrice: 0,
+    stock: 0,
+    productStatus: "",
+    categoryName: "",
+    rating: 0,
+    productImageUrl: ""
+}
 
 function ProductDetailComponent() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const product = mockProductDetail;
+    const {productNo} = useParams()
+    const [product, setProduct] = useState(initialState)
+    const [loading, setLoading] = useState(false)
 
-    // `ord` 기준으로 정렬된 이미지
-    const sortedImages = product.images.sort((a, b) => a.ord - b.ord);
-    const mainImage = sortedImages[0];
-    const thumbnailImages = sortedImages.slice(1);
+    const navigate = useNavigate()
 
     const handleEdit = () => {
-        navigate(`/product/detail/modify/${id}`);
-    };
+        navigate(`/product/modify/${productNo}`)
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        const pno = Number(productNo)
+        console.log(pno);
+        getProductOne(pno).then(result => {
+            setProduct(result)
+            setLoading(false)
+        })
+    },[productNo])
 
     return (
         <div className="p-4 bg-gray-50 min-h-screen">
+            {loading && <LoadingPage></LoadingPage>}
             {/* 상세 정보 헤더 */}
             <div className="bg-white shadow-md rounded-lg p-4 mb-4">
                 <h1 className="text-2xl font-semibold text-gray-800">
-                    상품 상세 정보 - #{id}
+                    상품 이름 : {product.productName}
                 </h1>
                 <p className="text-sm text-gray-600">
                     상품 정보를 확인하고 수정할 수 있습니다.
@@ -49,19 +58,19 @@ function ProductDetailComponent() {
                         상품 이미지
                     </div>
                     <img
-                        src={mainImage.url}
+                        src={product.productImageUrl}
                         alt="주요 상품 이미지"
                         className="w-full h-60 object-cover"
                     />
                     <div className="flex justify-center space-x-2 mt-2 p-2 bg-gray-100">
-                        {thumbnailImages.map((image) => (
-                            <img
-                                key={image.id}
-                                src={image.url}
-                                alt={`썸네일 이미지 ${image.id}`}
-                                className="w-16 h-16 object-cover rounded-md cursor-pointer hover:ring-2 hover:ring-blue-500"
-                            />
-                        ))}
+                        {/*{thumbnailImages.map((image) => (*/}
+                        {/*    <img*/}
+                        {/*        key={image.id}*/}
+                        {/*        src={image.url}*/}
+                        {/*        alt={`썸네일 이미지 ${image.id}`}*/}
+                        {/*        className="w-16 h-16 object-cover rounded-md cursor-pointer hover:ring-2 hover:ring-blue-500"*/}
+                        {/*    />*/}
+                        {/*))}*/}
                     </div>
                 </div>
 
@@ -72,7 +81,7 @@ function ProductDetailComponent() {
                         <div className="bg-white shadow-md rounded-lg p-4">
                             <p className="text-sm text-gray-600 mb-1">상품명</p>
                             <h2 className="text-lg font-semibold text-gray-800">
-                                {product.name}
+                                {product.productName}
                             </h2>
                         </div>
 
@@ -80,7 +89,7 @@ function ProductDetailComponent() {
                         <div className="bg-white shadow-md rounded-lg p-4">
                             <p className="text-sm text-gray-600 mb-1">상품 가격</p>
                             <p className="text-lg font-bold text-gray-800">
-                                {product.price.toLocaleString()}원
+                                {product.productPrice.toLocaleString()}원
                             </p>
                         </div>
 
@@ -88,7 +97,7 @@ function ProductDetailComponent() {
                         <div className="bg-white shadow-md rounded-lg p-4">
                             <p className="text-sm text-gray-600 mb-1">카테고리</p>
                             <p className="text-lg font-bold text-gray-800">
-                                {product.category}
+                                {product.categoryName}
                             </p>
                         </div>
 
@@ -97,12 +106,12 @@ function ProductDetailComponent() {
                             <p className="text-sm text-gray-600 mb-1">판매 상태</p>
                             <p
                                 className={`px-2 py-1 rounded-full text-xs font-medium inline-block ${
-                                    product.status === "판매중"
+                                    product.productStatus === "판매중"
                                         ? "bg-green-100 text-green-700"
-                                        : "bg-gray-100 text-gray-700"
+                                        : "bg-gray-100 text-red-600"
                                 }`}
                             >
-                                {product.status}
+                                {product.productStatus}
                             </p>
                         </div>
 
@@ -124,16 +133,15 @@ function ProductDetailComponent() {
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">
                         상품 설명
                     </h2>
-                    <p className="text-sm text-gray-700">{product.description}</p>
+                    <p className="text-sm text-gray-700">{product.productDescription}</p>
                 </div>
 
                 {/* 고객 리뷰 */}
                 <div className="bg-white shadow-md rounded-lg p-4">
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                        고객 리뷰
+                        고객 리뷰  {/*이거를 별표처리 */}{product.rating}
                     </h2>
                     <p className="text-sm text-gray-600">
-                        리뷰 데이터는 여기에 표시됩니다. (예: 4.5점 / 5.0점)
                     </p>
                 </div>
             </div>
