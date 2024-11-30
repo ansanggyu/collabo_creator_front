@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IAdminlogin, ISigninParam } from "../types/icreatorlogin.ts";
+import { IAdminlogin, ISigninParam } from "../types/iadminlogin.ts";
 import { postSignin } from "../apis/creatorlogin/creatorloginAPI.ts";
 
 const initialState: IAdminlogin = {
-    createrId: '',
+    creatorId: '',
     pw: '',
     accessToken: '',
     refreshToken: '',
@@ -22,14 +22,14 @@ const signinSlice = createSlice({
     reducers: {
         signin: (state, action) => {
             console.log("Signin action", state, action);
-            const { adminId, pw, accessToken, refreshToken, adminName } = action.payload;
+            const { creatorId, pw, accessToken, refreshToken, creatorName } = action.payload;
 
             // 상태 갱신
-            state.createrId = adminId || state.createrId;
+            state.creatorId = creatorId || state.creatorId;
             state.pw = pw || state.pw;
             state.accessToken = accessToken || state.accessToken;
             state.refreshToken = refreshToken || state.refreshToken;
-            state.creatorName = adminName || state.creatorName;
+            state.creatorName = creatorName || state.creatorName;
         },
         signout: () => {
             // 상태 초기화
@@ -43,7 +43,7 @@ const signinSlice = createSlice({
                 const result = action.payload; // API 응답 데이터
                 console.log("extraReducer) API just called successfully...");
                 if (result) {
-                    state.createrId = result.createrId;
+                    state.creatorId = result.creatorId;
                     state.pw = result.pw;
                     state.accessToken = result.accessToken;
                     state.refreshToken = result.refreshToken;

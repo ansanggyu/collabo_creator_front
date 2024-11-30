@@ -1,5 +1,5 @@
-export interface IAdminlogin {
-    createrId: string;
+export interface ICreatorlogin {
+    creatorId: string;
     pw: string;
     accessToken: string;
     refreshToken: string;
@@ -7,7 +7,7 @@ export interface IAdminlogin {
 }
 
 export interface ISigninParam {
-    createrId: string;
+    creatorId: string;
     pw: string;
 }
 

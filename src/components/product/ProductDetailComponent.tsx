@@ -5,6 +5,7 @@ import LoadingPage from "../../pages/LoadingPage.tsx";
 import {getProductOne} from "../../apis/product/productAPI.ts";
 
 const initialState : IProduct = {
+    categoryNo: 0, createdAt: "", creatorName: "", productImageOrd: 0,
     productNo: 0,
     productName: "",
     productDescription: "",

@@ -1,9 +1,9 @@
-import {IAdminlogin, ISigninParam} from "../../types/icreatorlogin.ts";
+import {ICreatorlogin, ISigninParam} from "../../types/icreatorlogin.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = 'http://localhost:8080/api/adminlogin'
+const host = 'http://10.10.10.177:8080/api/adminlogin'
 
-export const postSignin = async (param: ISigninParam): Promise<IAdminlogin> => {
+export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> => {
     try {
         const result = await jwtAxios.post(
             `${host}/makeToken`,
@@ -22,7 +22,7 @@ export const postSignin = async (param: ISigninParam): Promise<IAdminlogin> => {
     }
 }
 
-export const refreshRequest = async (accessToken: string, refreshToken: string): Promise<IAdminlogin> => {
+export const refreshRequest = async (accessToken: string, refreshToken: string): Promise<ICreatorlogin> => {
 
     const params = new URLSearchParams();
     params.append('refreshToken', refreshToken);
