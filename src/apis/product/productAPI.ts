@@ -2,7 +2,7 @@ import {IPageResponse} from "../../types/ipageresponse.ts";
 import {IProduct, IProductRequest, IUserCategory} from "../../types/iproduct.ts";
 import axios from "axios";
 
-const host = 'http://10.10.10.38:8080/api/product';
+const host = 'http://localhost:8080/api/product';
 
 export const addProduct = async (productData: IProductRequest): Promise<void> => {
     const result = await axios.post(`${host}/add`, productData, {
