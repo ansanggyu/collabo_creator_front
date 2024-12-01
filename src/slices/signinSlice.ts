@@ -1,17 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { IAdminlogin, ISigninParam } from "../types/iadminlogin.ts";
-import { postSignin } from "../apis/creatorlogin/creatorloginAPI.ts";
 
-const initialState: IAdminlogin = {
+import { postSignin } from "../apis/creatorlogin/creatorloginAPI.ts";
+import {ICreatorlogin, ISigninParam} from "../types/icreatorlogin.ts";
+
+const initialState: ICreatorlogin = {
     creatorId: '',
-    pw: '',
+    creatorPassword: '',
     accessToken: '',
     refreshToken: '',
     creatorName: ''
 };
 
 // `postSigninThunk`: 로그인 API 호출
-export const postSigninThunk = createAsyncThunk<IAdminlogin, ISigninParam>(
+export const postSigninThunk = createAsyncThunk<ICreatorlogin, ISigninParam>(
     'signin/postSigninThunk',
     postSignin // API 호출 함수
 );
@@ -22,11 +23,11 @@ const signinSlice = createSlice({
     reducers: {
         signin: (state, action) => {
             console.log("Signin action", state, action);
-            const { creatorId, pw, accessToken, refreshToken, creatorName } = action.payload;
+            const { creatorId, creatorPassword, accessToken, refreshToken, creatorName } = action.payload;
 
             // 상태 갱신
             state.creatorId = creatorId || state.creatorId;
-            state.pw = pw || state.pw;
+            state.creatorPassword = creatorPassword || state.creatorPassword;
             state.accessToken = accessToken || state.accessToken;
             state.refreshToken = refreshToken || state.refreshToken;
             state.creatorName = creatorName || state.creatorName;
@@ -44,7 +45,7 @@ const signinSlice = createSlice({
                 console.log("extraReducer) API just called successfully...");
                 if (result) {
                     state.creatorId = result.creatorId;
-                    state.pw = result.pw;
+                    state.creatorPassword = result.creatorPassword;
                     state.accessToken = result.accessToken;
                     state.refreshToken = result.refreshToken;
                     state.creatorName = result.creatorName;

@@ -1,6 +1,6 @@
 export interface ICreatorlogin {
     creatorId: string;
-    pw: string;
+    creatorPassword: string;
     accessToken: string;
     refreshToken: string;
     creatorName: string;
@@ -8,7 +8,7 @@ export interface ICreatorlogin {
 
 export interface ISigninParam {
     creatorId: string;
-    pw: string;
+    creatorPassword: string;
 }
 
 export interface IErrorResponse {

@@ -5,7 +5,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 
 const initialState: ISigninParam = {
     creatorId: '',
-    pw: ''
+    creatorPassword: ''
 }
 
 function SigninComponent() {
@@ -17,7 +17,7 @@ function SigninComponent() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const savedId = localStorage.getItem("rememberedAdminId");
+        const savedId = localStorage.getItem("rememberedcreatorId");
         if (savedId) {
             setParam((prev) => ({ ...prev, creatorId: savedId }));
             setRememberId(true); // 저장된 ID가 있으면 체크박스를 선택 상태로 유지
@@ -43,11 +43,11 @@ function SigninComponent() {
         try {
             await doSignin(param);
 
-            // "아이디 저장"이 선택되었으면 로컬 스토리지에 adminId 저장
+            // "아이디 저장"이 선택되었으면 로컬 스토리지에 creatorId 저장
             if (rememberId) {
-                localStorage.setItem("rememberedAdminId", param.creatorId);
+                localStorage.setItem("rememberedcreatorId", param.creatorId);
             } else {
-                localStorage.removeItem("rememberedAdminId"); // 체크 해제 시 로컬 스토리지에서 삭제
+                localStorage.removeItem("rememberedcreatorId"); // 체크 해제 시 로컬 스토리지에서 삭제
             }
 
             // 로그인 성공 후, 메인 페이지로 리디렉션
@@ -78,7 +78,7 @@ function SigninComponent() {
                     <div className="mb-6">
                         <input
                             type="text"
-                            name="adminId"
+                            name="creatorId"
                             className="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 shadow-md"
                             placeholder="아이디"
                             value={param.creatorId}
@@ -87,11 +87,11 @@ function SigninComponent() {
                     </div>
                     <div className="mb-8">
                         <input
-                            type="password"
-                            name="pw"
+                            type="creatorPassword"
+                            name="creatorPassword"
                             className="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 shadow-md"
                             placeholder="패스워드"
-                            value={param.pw}
+                            value={param.creatorPassword}
                             onChange={handleChange}
                         />
                     </div>

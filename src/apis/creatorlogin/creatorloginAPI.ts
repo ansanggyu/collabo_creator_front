@@ -1,7 +1,7 @@
 import {ICreatorlogin, ISigninParam} from "../../types/icreatorlogin.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = 'http://10.10.10.177:8080/api/adminlogin'
+const host = 'http://localhost:8080/api/creatorlogin'
 
 export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> => {
     try {
@@ -16,8 +16,10 @@ export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> =>
         );
         return result.data;
     } catch (exception: any) {
-        //console.error(exception.response.data.message); // 에러 로그 추가
-        window.location.href = "/login?error=incorrect"
+        console.error("Signin API error:", exception);
+        const errorMessage = exception.response?.data?.message || "An unknown error occurred.";
+        console.error("Error message:", errorMessage);
+        window.location.href = "/login?error=incorrect";
         throw exception;
     }
 }

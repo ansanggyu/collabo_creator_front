@@ -1,11 +1,11 @@
 import {IPageResponse} from "../../types/ipageresponse.ts";
 import {IProduct, IProductRequest, IUserCategory} from "../../types/iproduct.ts";
-import axios from "axios";
+import jwtAxios from "../../util/jwtUtil.ts";
 
 const host = 'http://localhost:8080/api/product';
 
 export const addProduct = async (productData: IProductRequest): Promise<void> => {
-    const result = await axios.post(`${host}/add`, productData, {
+    const result = await jwtAxios.post(`${host}/add`, productData, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -17,10 +17,16 @@ export const addProduct = async (productData: IProductRequest): Promise<void> =>
 };
 
 export const getCategoriesByCreator = async (creatorId: string): Promise<IUserCategory[]> => {
-    const result = await axios.get(`${host}/usercategory`, {
-        params: { creatorId },
-    });
-    return result.data;
+    try {
+        const result = await jwtAxios.get(`${host}/usercategory`, {
+            params: { creatorId },
+        });
+        console.log("successed in getting category with", creatorId)
+        return result.data;
+    } catch (error: any) {
+        console.error("Failed to fetch categories by creator:", error.message);
+        throw new Error("Unable to retrieve categories. Please try again later.");
+    }
 };
 
 export const getProductList = async (page?:number, size?:number): Promise<IPageResponse<IProduct>> => {
@@ -28,14 +34,14 @@ export const getProductList = async (page?:number, size?:number): Promise<IPageR
     const pageValue:number = page || 1
     const sizeValue:number = size || 10
 
-    const result = await axios.get(`${host}/list?page=${pageValue}&size=${sizeValue}`)
+    const result = await jwtAxios.get(`${host}/list?page=${pageValue}&size=${sizeValue}`)
 
     return result.data;
 }
 
 export const getProductOne = async (productNo:number): Promise<IProduct> => {
 
-    const result = await axios.get(`${host}/read/${productNo}`);
+    const result = await jwtAxios.get(`${host}/read/${productNo}`);
 
     return result.data;
 }
@@ -45,6 +51,6 @@ export const searchProduct = async (page?:number, size?:number, productName?: st
 
     const params = {page: String(page), size: String(size), productName, startDate, endDate}
 
-    const result = await axios.get(`${host}/search`, {params})
+    const result = await jwtAxios.get(`${host}/search`, {params})
     return result.data;
 }

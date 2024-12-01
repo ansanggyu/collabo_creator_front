@@ -7,9 +7,9 @@ const cookies = new Cookies();
 
 const loadCookie = () => {
 
-    const adminloginCookie = cookies.get("adminlogin");
+    const creatorloginCookie = cookies.get("creatorlogin");
 
-    return adminloginCookie
+    return creatorloginCookie
 }
 
 
@@ -18,18 +18,19 @@ const useSignin = () => {
     const dispatch = useAppDispatch()
     let creatorlogin = useAppSelector(state => state.signin)
 
-    if(!creatorlogin.createrId){
+    if(!creatorlogin.creatorId){
         creatorlogin = loadCookie()
     }
 
-    const doSignin = (param:ISigninParam) => {
-        dispatch(postSigninThunk(param))
-            .unwrap()
-            .then( data => {
-                console.log("unwrap")
-                console.log(data)
-                cookies.set("creatorlogin", data, {path:"/"})
-            })
+    const doSignin = async (param: ISigninParam) => {
+        try {
+            const data = await dispatch(postSigninThunk(param)).unwrap();
+            console.log("unwrap", data);
+            cookies.set("creatorlogin", data, { path: "/" });
+        } catch (error: any) {
+            console.error("useSignin.ts failed:", error);
+            throw error; // 예외를 상위 컴포넌트로 전달
+        }
     }
 
     const doSignout = () => {

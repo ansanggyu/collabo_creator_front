@@ -7,13 +7,14 @@ const jwtAxios = axios.create();
 
 // 요청 보내기 전에 accessToken을 쿠키에서 꺼내서 헤더에 추가
 const beforeReq = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const adminLoginCookie = cookies.get("adminlogin");
+    const creatorLoginCookie = cookies.get("creatorlogin");
 
-    if (!adminLoginCookie) {
-        throw new Error('AdminLogin Cookies are not found.');
+    if (!creatorLoginCookie) {
+        console.log('CreatorLogin Cookies are not found.');
+        return config; // 기본적으로 요청을 진행하도록 설정
     }
 
-    const accessToken = adminLoginCookie.accessToken;
+    const accessToken = creatorLoginCookie.accessToken;
 
     if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -43,14 +44,14 @@ const failRes = async (error: any) => {
     if (error.response.data.msg === "Access Token just Expired!!!") {
         console.log("if문 안에서 실행됨")
 
-        const adminloginCookie = cookies.get("adminlogin");
+        const creatorloginCookie = cookies.get("creatorlogin");
 
-        if (!adminloginCookie) {
-            console.error("adminlogin cookie is missing!");
+        if (!creatorloginCookie) {
+            console.error("creatorlogin cookie is missing!");
             return Promise.reject(error);
         }
 
-        const { accessToken, refreshToken } = adminloginCookie;
+        const { accessToken, refreshToken } = creatorloginCookie;
 
         try {
             // Refresh 요청을 통해 새 토큰 발급
@@ -58,12 +59,12 @@ const failRes = async (error: any) => {
             console.log("Token refresh result:", refreshResult);
 
             // 새로운 토큰을 쿠키에 업데이트
-            cookies.set("adminlogin", {
-                ...adminloginCookie,
+            cookies.set("creatorlogin", {
+                ...creatorloginCookie,
                 accessToken: refreshResult.accessToken,
                 refreshToken: refreshResult.refreshToken
             }, { path: "/", maxAge: (60 * 60 * 24 * 7) });
-            console.log("Updated tokens in cookies:", cookies.get("adminlogin"));
+            console.log("Updated tokens in cookies:", cookies.get("creatorlogin"));
 
             // 원래 요청을 재시도
             const originalRequest = error.config;
@@ -72,10 +73,10 @@ const failRes = async (error: any) => {
 
         } catch (refreshError) {
             console.log(error.response.data.msg)
-            console.log("reFresh Token has Expired.")
+            console.log("refresh Token has Expired.")
 
-            cookies.remove("adminlogin", { path: "/" })
-            console.log("adminlogin cookie removed")
+            cookies.remove("creatorlogin", { path: "/" })
+            console.log("creatorlogin cookie removed")
 
             window.location.href = "/login?error=all";
             console.log("move to loginPage")

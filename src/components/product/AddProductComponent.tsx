@@ -24,23 +24,26 @@ function AddProductComponent() {
     const [categories, setCategories] = useState<IUserCategory[]>([]);
     const [images, setImages] = useState<(string | undefined)[]>(Array(6).fill(undefined)); // 이미지 최대 6개
 
-    // 쿠키 생성 (임시 테스트용)
-    useEffect(() => {
-        const existingCreatorId = Cookies.get("creatorId");
-        if (!existingCreatorId) {
-            Cookies.set("creatorId", "creator12", { expires: 7, path: "/" });
-            console.log("쿠키 생성: creatorId = creator10");
-        }
-    }, []);
 
     // 페이지 로드 시 쿠키에서 creatorId 가져오기
     useEffect(() => {
-        const cookieCreatorId = Cookies.get("creatorId");
-        if (!cookieCreatorId) {
+        const cookieCreatorLogin = Cookies.get("creatorlogin");
+        if (!cookieCreatorLogin) {
             alert("creatorId 쿠키가 없습니다. 접근이 제한됩니다.");
             throw new Error("쿠키에서 creatorId를 가져올 수 없습니다.");
         }
-        setCreatorId(cookieCreatorId);
+
+        try {
+            const parsedCookie = JSON.parse(cookieCreatorLogin); // 쿠키 데이터를 JSON으로 변환
+            if (parsedCookie.creatorId) {
+                setCreatorId(parsedCookie.creatorId);
+            } else {
+                throw new Error("쿠키에서 creatorId가 없습니다.");
+            }
+        } catch (error) {
+            console.error("쿠키 파싱 중 오류 발생:", error);
+            alert("쿠키 데이터를 확인할 수 없습니다.");
+        }
     }, []);
 
     // 카테고리 불러오기
