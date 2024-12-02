@@ -1,8 +1,9 @@
 import { lazy, Suspense } from "react";
 import LoadingPage from "../pages/common/LoadingPage.tsx";
+import OfflineStoreAddPage from "../pages/offlinemanagement/OfflineStoreAddPage.tsx";
+import OfflineStoreEditPage from "../pages/offlinemanagement/OfflineStoreEditPage.tsx";
 
 const OfflineBlogPage = lazy(() => import("../pages/offlinemanagement/OfflineManagementPage.tsx"));
-const OfflineStoreDetailPage = lazy(() => import("../pages/offlinemanagement/OfflineManagementDetailPage.tsx"));
 
 const OfflineManagementRouter = {
     path: "/offlinestore",
@@ -16,13 +17,21 @@ const OfflineManagementRouter = {
             ),
         },
         {
-            path: ":id",
+            path: "add",
             element: (
                 <Suspense fallback={<LoadingPage />}>
-                    <OfflineStoreDetailPage />
+                    <OfflineStoreAddPage />
                 </Suspense>
             ),
         },
+        {
+            path: "edit/:storeNo",
+            element: (
+                <Suspense fallback={<LoadingPage />}>
+                    <OfflineStoreEditPage />
+                </Suspense>
+            ),
+        }
     ],
 };
 

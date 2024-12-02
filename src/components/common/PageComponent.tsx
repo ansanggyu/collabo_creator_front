@@ -4,7 +4,7 @@ import {IPageResponse} from "../../types/ipageresponse.ts";
 
 
 interface Props<E> {
-    pageResponse:IPageResponse<E>
+    pageResponse:IPageResponse<E>;
 }
 
 const makeArr = (from:number, to:number): number[] => {
