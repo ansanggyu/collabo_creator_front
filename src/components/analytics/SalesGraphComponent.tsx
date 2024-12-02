@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
     Legend,
@@ -14,10 +15,9 @@ import { getCreatorAnalytics } from "../../apis/analytics/analyticsAPI.ts";
 import { RootState } from "../../store.ts";
 
 // Chart.js 필수 모듈 등록
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function SalesGraphComponent() {
-
     const creatorId = useSelector((state: RootState) => state.signin.creatorId);
     const [dateRange, setDateRange] = useState({
         start: "2023-01-01",
@@ -33,14 +33,25 @@ function SalesGraphComponent() {
         return (((value - array[index - 1]) / array[index - 1]) * 100).toFixed(2);
     });
 
-    const barData = {
+    const getKoreanMonthName = (monthName: string): string => {
+        const date = new Date(`${monthName} 1, 2000`); // 임의의 날짜 생성
+        return new Intl.DateTimeFormat("ko-KR", { month: "long" }).format(date); // 한국어 월 이름 반환
+    };
+
+    const lineData = {
         labels,
         datasets: [
             {
                 label: `월별 총 매출 (₩)`,
                 data: salesData,
-                backgroundColor: "rgba(30, 136, 229, 0.7)",
-                hoverBackgroundColor: "rgba(30, 136, 229, 1)",
+                borderColor: "rgba(30, 136, 229, 0.7)",
+                backgroundColor: "rgba(30, 136, 229, 0.2)",
+                fill: true,
+                tension: 0.4, // 부드러운 곡선 효과
+                pointBorderColor: "rgba(30, 136, 229, 1)",
+                pointBackgroundColor: "white",
+                pointBorderWidth: 2,
+                pointHoverRadius: 5,
             },
         ],
     };
@@ -56,7 +67,7 @@ function SalesGraphComponent() {
                 const data = await getCreatorAnalytics(creatorId, dateRange.start, dateRange.end);
                 console.log("API Response Data:", data);
 
-                const updatedLabels = data.map((item: any) => item.month);
+                const updatedLabels = data.map((item: any) => getKoreanMonthName(item.month));
                 const updatedSalesData = data.map((item: any) => item.totalSales);
 
                 setLabels(updatedLabels);
@@ -73,6 +84,7 @@ function SalesGraphComponent() {
         <div className="bg-white shadow-lg rounded-lg p-6">
             <h1 className="text-2xl font-bold mb-6">매출 그래프</h1>
 
+            {/* 날짜 필터 */}
             <div className="grid grid-cols-4 gap-4 mb-6">
                 <div>
                     <label className="block text-sm font-bold mb-2">시작 날짜</label>
@@ -81,7 +93,7 @@ function SalesGraphComponent() {
                         name="start"
                         value={dateRange.start}
                         onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                        className="border rounded px-3 py-2 w-full"
+                        className="border rounded px-3 py-2 w-full shadow-sm"
                     />
                 </div>
                 <div>
@@ -91,15 +103,17 @@ function SalesGraphComponent() {
                         name="end"
                         value={dateRange.end}
                         onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                        className="border rounded px-3 py-2 w-full"
+                        className="border rounded px-3 py-2 w-full shadow-sm"
                     />
                 </div>
             </div>
 
+            {/* 꺾은선 그래프 */}
             <div className="h-[300px] mb-6">
-                <Bar data={barData} options={{ maintainAspectRatio: false }} />
+                <Line data={lineData} options={{ maintainAspectRatio: false }} />
             </div>
 
+            {/* 상세 데이터 테이블 */}
             <div className="bg-gray-100 p-4 rounded-lg shadow">
                 <h2 className="text-lg font-bold mb-4">총 매출: {totalSales.toLocaleString()}₩</h2>
                 <table className="table-auto w-full text-sm border-collapse border border-gray-200">

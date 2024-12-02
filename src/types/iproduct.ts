@@ -41,6 +41,20 @@ export interface ICreatorAnalytics {
     reason: string;
 }
 
+export interface IProductStats {
+    categoryName: string; // 카테고리 이름
+    productName: string;  // 상품 이름
+    totalSold: number;    // 총 판매 수량
+    totalRefunded: number; // 환불된 수량
+    totalSales: number;   // 매출 금액
+}
+
+export interface IRefundNCancel {
+    status: string; // 환불, 취소, 발송 처리
+    count: number;  // 해당 상태의 건수
+    percentage: number; // 해당 상태의 백분율
+}
+
 export interface IInventoryProduct {
     id: number; // 상품 ID
     name: string; // 상품명

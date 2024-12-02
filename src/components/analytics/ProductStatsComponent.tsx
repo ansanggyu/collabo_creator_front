@@ -1,30 +1,74 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { IProductStats, IUserCategory } from "../../types/iproduct.ts";
+import {getCategoriesByCreator} from "../../apis/product/productAPI.ts";
+import {getProductStats} from "../../apis/analytics/analyticsAPI.ts";
 
 function ProductStatsComponent() {
-    const [category, setCategory] = useState("전체");
+    const creatorId = useSelector((state: RootState) => state.signin.creatorId); // Redux에서 creatorId 가져오기
+    const [categories, setCategories] = useState<IUserCategory[]>([
+        { categoryNo: 0, categoryName: "전체" },
+    ]);
+    const [category, setCategory] = useState<number>(0);
     const [dateRange, setDateRange] = useState({
         start: "2023-01-01",
-        end: "2023-12-31",
+        end: "2024-12-31",
     });
     const [searchTerm, setSearchTerm] = useState("");
+    const [stats, setStats] = useState<IProductStats[]>([]); // 상태 타입을 IProductStats[]로 설정
 
-    const categories = ["전체", "전자제품", "의류", "가구"];
+    // 카테고리 불러오기
+    useEffect(() => {
+        const fetchCategories = async () => {
+            if (!creatorId || creatorId.trim() === "") {
+                console.error("creatorId가 설정되지 않았습니다.");
+                return;
+            }
+            try {
+                const result = await getCategoriesByCreator(creatorId);
+                setCategories([{ categoryNo: 0, categoryName: "전체" }, ...result]);
+            } catch (error) {
+                console.error("카테고리 불러오기 실패:", error);
+            }
+        };
 
-    // 더미 데이터
-    const stats = [
-        { category: "전자제품", productName: "스마트폰", sales: 100, refunds: 2, revenue: 2000000 },
-        { category: "전자제품", productName: "노트북", sales: 50, refunds: 1, revenue: 1500000 },
-        { category: "가구", productName: "소파", sales: 30, refunds: 0, revenue: 900000 },
-    ];
+        fetchCategories();
+    }, [creatorId]);
 
-    const filteredStats = stats.filter((stat) => {
-        const matchesCategory = category === "전체" || stat.category === category;
-        const matchesSearchTerm = stat.productName.includes(searchTerm);
-        return matchesCategory && matchesSearchTerm;
-    });
+    // 상품 통계 데이터 불러오기
+    useEffect(() => {
+        const fetchStats = async () => {
+            if (!creatorId || creatorId.trim() === "") {
+                console.error("Redux 상태에서 creatorId를 가져오지 못했습니다.");
+                return;
+            }
+
+            try {
+                console.log("Fetching product stats with the following parameters:");
+                console.log("creatorId:", creatorId);
+                console.log("dateRange:", dateRange);
+
+                const result = await getProductStats(
+                    creatorId,
+                    dateRange.start,
+                    dateRange.end
+                );
+
+                console.log("API Response:", result);
+                setStats(result); // API 결과를 상태에 저장
+            } catch (error) {
+                console.error("상품 통계 불러오기 실패:", error);
+                alert("상품 통계를 불러오는 중 오류가 발생했습니다.");
+            }
+        };
+
+        fetchStats();
+    }, [creatorId, dateRange]);
+
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setCategory(e.target.value);
+        setCategory(Number(e.target.value));
     };
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,8 +94,8 @@ function ProductStatsComponent() {
                         className="border rounded px-3 py-2 w-full"
                     >
                         {categories.map((cat) => (
-                            <option key={cat} value={cat}>
-                                {cat}
+                            <option key={cat.categoryNo} value={cat.categoryNo}>
+                                {cat.categoryName}
                             </option>
                         ))}
                     </select>
@@ -96,20 +140,20 @@ function ProductStatsComponent() {
                     <tr className="bg-gray-300 border-b border-gray-400">
                         <th className="px-4 py-2 text-left">카테고리</th>
                         <th className="px-4 py-2 text-left">상품명</th>
-                        <th className="px-4 py-2 text-right">판매량</th>
+                        <th className="px-4 py-2 text-right">판매 수량</th>
                         <th className="px-4 py-2 text-right">환불 수</th>
-                        <th className="px-4 py-2 text-right">총 매출액 (₩)</th>
+                        <th className="px-4 py-2 text-right">상품 매출액 (₩)</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {filteredStats.map((stat, index) => (
+                    {stats.map((stat, index) => (
                         <tr key={index} className="border-b border-gray-200">
-                            <td className="px-4 py-2 text-left">{stat.category}</td>
+                            <td className="px-4 py-2 text-left">{stat.categoryName}</td>
                             <td className="px-4 py-2 text-left">{stat.productName}</td>
-                            <td className="px-4 py-2 text-right">{stat.sales}</td>
-                            <td className="px-4 py-2 text-right">{stat.refunds}</td>
+                            <td className="px-4 py-2 text-right">{stat.totalSold}</td>
+                            <td className="px-4 py-2 text-right">{stat.totalRefunded}</td>
                             <td className="px-4 py-2 text-right">
-                                {stat.revenue.toLocaleString()}₩
+                                {stat.totalSales.toLocaleString()}₩
                             </td>
                         </tr>
                     ))}
