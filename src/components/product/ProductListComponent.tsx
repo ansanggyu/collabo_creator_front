@@ -3,12 +3,15 @@ import {useNavigate, useSearchParams} from "react-router-dom";
 import { getProductList } from "../../apis/product/productAPI.ts";
 import { IProduct } from "../../types/iproduct.ts";
 import PageComponent from "../common/PageComponent.tsx";
-import {IPageResponse} from "../../types/ipageresponse.ts"; // 페이지 컴포넌트 import
+import {IPageResponse} from "../../types/ipageresponse.ts";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store.ts"; // 페이지 컴포넌트 import
 
 function ProductListComponent() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
+    const creatorId = useSelector((state: RootState) => state.signin.creatorId);
     // 상태 관리
     const [pageResponse, setPageResponse] = useState<IPageResponse<IProduct> | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -20,8 +23,13 @@ function ProductListComponent() {
 
     // API 호출
     const fetchProducts = async (page: number = 1) => {
+        if (!creatorId || creatorId.trim() === "") {
+            console.error("Redux 상태에서 creatorId를 가져오지 못했습니다.");
+            return;
+        }
+
         try {
-            const response: IPageResponse<IProduct> = await getProductList(page);
+            const response: IPageResponse<IProduct> = await getProductList(page, 10, creatorId);
             setPageResponse(response);
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -30,7 +38,7 @@ function ProductListComponent() {
 
     useEffect(() => {
         fetchProducts(currentPage);
-    }, [currentPage]);
+    }, [currentPage, creatorId]);
 
     // 통계 계산
     const statistics = {

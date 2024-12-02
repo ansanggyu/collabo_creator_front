@@ -5,6 +5,8 @@ import { getProductList } from "../../apis/product/productAPI";
 import { IPageResponse } from "../../types/ipageresponse";
 import PageComponent from "../common/PageComponent.tsx";
 import LoadingPage from "../../pages/LoadingPage.tsx";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store.ts";
 
 const initialState: IPageResponse<IProduct> = {
     dtoList: [],
@@ -21,6 +23,7 @@ const initialState: IPageResponse<IProduct> = {
 
 function InventoryComponent() {
     const [query] = useSearchParams();
+    const creatorId = useSelector((state: RootState) => state.signin.creatorId);
 
     const page: number = Number(query.get("page")) || 1;
     const size: number = Number(query.get("size")) || 10;
@@ -42,15 +45,21 @@ function InventoryComponent() {
     };
 
     useEffect(() => {
+
+        if (!creatorId || creatorId.trim() === "") {
+            console.error("Redux 상태에서 creatorId를 가져오지 못했습니다.");
+            return;
+        }
+
         setLoading(true)
-        getProductList(page, size).then(data => {
+        getProductList(page, size, creatorId).then(data => {
             setPageResponse(data)
 
             setTimeout(() => {
                 setLoading(false)
             }, 400)
         })
-    }, [page, size])
+    }, [page, size, creatorId])
 
     // 상품 리스트 요소 생성
     const productListLI = pageResponse.dtoList.map((product: IProduct) => {

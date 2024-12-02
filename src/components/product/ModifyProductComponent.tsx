@@ -1,213 +1,231 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { IProduct, IUserCategory } from "../../types/iproduct.ts";
+import { useEffect, useState } from "react";
+import LoadingPage from "../../pages/LoadingPage.tsx";
+import { getProductOne, updateProduct, getCategoriesByCreator } from "../../apis/product/productAPI.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store.ts";
 
-const mockProductDetail = {
-    id: 1,
-    name: "스마트폰",
-    description: "최신형 스마트폰입니다.",
-    price: 1000000,
-    stock: 50,
-    category: "전자제품",
-    status: "판매중",
-    images: [],
+const initialState: IProduct = {
+    categoryNo: 0,
+    createdAt: "",
+    creatorName: "",
+    productImageOrd: 0,
+    productNo: 0,
+    productName: "",
+    productDescription: "",
+    productPrice: 0,
+    stock: 0,
+    productStatus: "",
+    categoryName: "",
+    rating: 0,
+    productImageUrl: "",
+};
+
+// 상태 매핑 테이블
+const productStatusMapping: { [key: string]: number } = {
+    "판매중": 1,
+    "판매중지": 2,
+    "품절": 3,
 };
 
 function ModifyProductComponent() {
-    const { id } = useParams();
+    const { productNo } = useParams();
     const navigate = useNavigate();
-    const [product, setProduct] = useState(mockProductDetail);
+    const creatorId = useSelector((state: RootState) => state.signin.creatorId);
+    const [product, setProduct] = useState<IProduct>(initialState);
+    const [categories, setCategories] = useState<IUserCategory[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const handleImageUpload = (file: File, index: number) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const updatedImages = [...product.images];
-            updatedImages[index] = { id: index + 1, url: reader.result, ord: index + 1 };
-            setProduct({ ...product, images: updatedImages });
-        };
-        reader.readAsDataURL(file);
+    // 입력 값 변경 핸들러
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setProduct((prev) => ({
+            ...prev,
+            [name]: name === "productPrice" || name === "stock" ? Number(value) : value,
+        }));
     };
 
-    const handleImageDelete = (index: number) => {
-        const updatedImages = [...product.images];
-        updatedImages[index] = undefined; // 해당 칸 비우기
-        setProduct({ ...product, images: updatedImages });
+    // 카테고리 변경 핸들러
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedCategory = categories.find((category) => category.categoryNo === Number(e.target.value));
+        if (selectedCategory) {
+            setProduct((prev) => ({
+                ...prev,
+                categoryNo: selectedCategory.categoryNo,
+                categoryName: selectedCategory.categoryName,
+            }));
+        } else {
+            console.error("카테고리가 유효하지 않습니다.");
+        }
     };
 
-    const handleSave = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("수정된 상품:", product);
-        alert("상품 정보가 수정되었습니다.");
-        navigate(`/product/detail/${id}`);
+    // 저장 버튼 핸들러
+    const handleSave = async () => {
+        if (!product.productNo || !creatorId) {
+            alert("상품 번호 또는 작성자 ID가 누락되었습니다.");
+            return;
+        }
+        if (!product.categoryNo) {
+            alert("카테고리가 선택되지 않았습니다.");
+            return;
+        }
+        try {
+            // `productStatus`를 숫자로 변환
+            const productStatusNumber = productStatusMapping[product.productStatus];
+            const payload = {
+                ...product,
+                productStatus: productStatusNumber.toString(), // 숫자를 문자열로 변환
+            };
+            await updateProduct(creatorId, payload); // payload는 IProduct 타입과 일치
+            alert("상품 정보가 성공적으로 수정되었습니다.");
+            navigate(`/product/detail/${product.productNo}`);
+        } catch (error: any) {
+            console.error("상품 정보 수정 중 오류 발생:", error.message);
+            alert("상품 정보 수정에 실패했습니다.");
+        }
     };
+
+    // 데이터 초기화
+    useEffect(() => {
+        if (!creatorId || creatorId.trim() === "") {
+            console.error("Redux 상태에서 creatorId를 가져오지 못했습니다.");
+            return;
+        }
+
+        setLoading(true);
+        const pno = Number(productNo);
+
+        // 상품 정보 불러오기
+        Promise.all([
+            getProductOne(pno).then((result) => {
+                if (!result || !result.productNo) {
+                    console.error("Invalid product data:", result);
+                    throw new Error("상품 정보를 불러오지 못했습니다.");
+                }
+                setProduct(result);
+            }),
+            getCategoriesByCreator(creatorId).then((categoryList) => setCategories(categoryList)),
+        ])
+            .catch((error) => {
+                console.error("데이터 로드 중 오류 발생:", error);
+                alert("데이터를 로드하는 중 문제가 발생했습니다.");
+            })
+            .finally(() => setLoading(false));
+    }, [productNo, creatorId]);
 
     return (
-        <form onSubmit={handleSave} className="p-4 bg-gray-50 min-h-screen">
-            {/* 수정 화면 헤더 */}
+        <div className="p-4 bg-gray-50 min-h-screen">
+            {loading && <LoadingPage />}
+
             <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-                <h1 className="text-2xl font-semibold text-gray-800">
-                    상품 수정 - #{id}
-                </h1>
-                <p className="text-sm text-gray-600">상품 정보를 수정하고 저장하세요.</p>
+                <h1 className="text-2xl font-semibold text-gray-800">상품 수정</h1>
+                <p className="text-sm text-gray-600">상품 정보를 수정하세요.</p>
             </div>
 
-            {/* 이미지 관리 */}
-            <div className="bg-white shadow-md rounded-lg p-4 mb-4">
-                <h2 className="text-lg font-semibold text-gray-800 mb-2">이미지 관리 (최대 6개)</h2>
-                <div className="grid grid-cols-3 gap-4">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                        <div
-                            key={index}
-                            className="relative flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg"
-                        >
-                            {product.images[index] ? (
-                                <>
-                                    <img
-                                        src={product.images[index]?.url as string}
-                                        alt={`이미지 ${index + 1}`}
-                                        className="w-full h-full object-cover rounded-lg"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleImageDelete(index)}
-                                        className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs"
-                                    >
-                                        X
-                                    </button>
-                                </>
-                            ) : (
-                                <label
-                                    htmlFor={`image-upload-${index}`}
-                                    className="flex flex-col items-center justify-center w-full h-full cursor-pointer text-gray-400"
-                                >
-                                    <span className="text-sm">{index + 1}</span>
-                                    <span className="text-xs">이미지 추가</span>
-                                    <input
-                                        id={`image-upload-${index}`}
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) =>
-                                            e.target.files && handleImageUpload(e.target.files[0], index)
-                                        }
-                                    />
-                                </label>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* 수정 가능한 상세 정보 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 상품명 */}
-                <div className="bg-white shadow-md rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">상품명</p>
-                    <input
-                        type="text"
-                        name="name"
-                        value={product.name}
-                        onChange={(e) =>
-                            setProduct({ ...product, name: e.target.value })
-                        }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        required
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="bg-gray-100 p-2 text-center text-sm text-gray-600">상품 이미지</div>
+                    <img
+                        src={product.productImageUrl}
+                        alt="주요 상품 이미지"
+                        className="w-full h-60 object-cover"
                     />
                 </div>
 
-                {/* 상품 가격 */}
-                <div className="bg-white shadow-md rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">상품 가격</p>
-                    <input
-                        type="number"
-                        name="price"
-                        value={product.price}
-                        onChange={(e) =>
-                            setProduct({ ...product, price: parseInt(e.target.value, 10) })
-                        }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        required
-                    />
-                </div>
+                <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white shadow-md rounded-lg p-4">
+                            <label className="text-sm text-gray-600 mb-1 block">상품명</label>
+                            <input
+                                type="text"
+                                name="productName"
+                                value={product.productName}
+                                onChange={handleInputChange}
+                                className="w-full border rounded-lg p-2 text-gray-800"
+                            />
+                        </div>
 
-                {/* 카테고리 */}
-                <div className="bg-white shadow-md rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">카테고리</p>
-                    <select
-                        name="category"
-                        value={product.category}
-                        onChange={(e) =>
-                            setProduct({ ...product, category: e.target.value })
-                        }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    >
-                        <option value="전자제품">전자제품</option>
-                        <option value="의류">의류</option>
-                        <option value="가구">가구</option>
-                        <option value="식품">식품</option>
-                        <option value="기타">기타</option>
-                    </select>
-                </div>
+                        <div className="bg-white shadow-md rounded-lg p-4">
+                            <label className="text-sm text-gray-600 mb-1 block">상품 가격</label>
+                            <input
+                                type="number"
+                                name="productPrice"
+                                value={product.productPrice}
+                                onChange={handleInputChange}
+                                className="w-full border rounded-lg p-2 text-gray-800"
+                            />
+                        </div>
 
-                {/* 판매 상태 */}
-                <div className="bg-white shadow-md rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">판매 상태</p>
-                    <select
-                        name="status"
-                        value={product.status}
-                        onChange={(e) =>
-                            setProduct({ ...product, status: e.target.value })
-                        }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    >
-                        <option value="판매중">판매중</option>
-                        <option value="판매중지">판매중지</option>
-                        <option value="품절">품절</option>
-                    </select>
-                </div>
+                        <div className="bg-white shadow-md rounded-lg p-4">
+                            <label className="text-sm text-gray-600 mb-1 block">카테고리</label>
+                            <select
+                                name="categoryNo"
+                                value={product.categoryNo}
+                                onChange={handleCategoryChange}
+                                className="w-full border rounded-lg p-2 text-gray-800"
+                            >
+                                <option value="" disabled>
+                                    카테고리를 선택하세요
+                                </option>
+                                {categories.map((category) => (
+                                    <option key={category.categoryNo} value={category.categoryNo}>
+                                        {category.categoryName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-                {/* 재고 수량 */}
-                <div className="bg-white shadow-md rounded-lg p-4 col-span-2">
-                    <p className="text-sm text-gray-600 mb-1">재고 수량</p>
-                    <input
-                        type="number"
-                        name="stock"
-                        value={product.stock}
-                        onChange={(e) =>
-                            setProduct({ ...product, stock: parseInt(e.target.value, 10) })
-                        }
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                        required
-                    />
+                        <div className="bg-white shadow-md rounded-lg p-4">
+                            <label className="text-sm text-gray-600 mb-1 block">판매 상태</label>
+                            <select
+                                name="productStatus"
+                                value={product.productStatus}
+                                onChange={handleInputChange}
+                                className="w-full border rounded-lg p-2 text-gray-800"
+                            >
+                                <option value="판매중">판매중</option>
+                                <option value="판매중지">판매중지</option>
+                                <option value="품절">품절</option>
+                            </select>
+                        </div>
+
+                        <div className="bg-white shadow-md rounded-lg p-4 col-span-2">
+                            <label className="text-sm text-gray-600 mb-1 block">재고 수량</label>
+                            <input
+                                type="number"
+                                name="stock"
+                                value={product.stock}
+                                onChange={handleInputChange}
+                                className="w-full border rounded-lg p-2 text-gray-800"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="bg-white shadow-md rounded-lg p-4">
+                        <label className="text-sm text-gray-600 mb-1 block">상품 설명</label>
+                        <textarea
+                            name="productDescription"
+                            value={product.productDescription}
+                            onChange={handleInputChange}
+                            className="w-full border rounded-lg p-2 text-gray-800"
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* 상품 설명 */}
-            <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-                <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                    상품 설명
-                </h2>
-                <textarea
-                    name="description"
-                    value={product.description}
-                    onChange={(e) =>
-                        setProduct({ ...product, description: e.target.value })
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    rows={4}
-                    required
-                />
-            </div>
-
-            {/* 저장 버튼 */}
             <div className="text-right mt-4">
                 <button
-                    type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm"
+                    onClick={handleSave}
+                    disabled={loading || !product.productNo}
+                    className={`bg-blue-500 text-white px-4 py-2 rounded-lg transition text-sm ${
+                        loading || !product.productNo ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+                    }`}
                 >
                     저장하기
                 </button>
             </div>
-        </form>
+        </div>
     );
 }
 

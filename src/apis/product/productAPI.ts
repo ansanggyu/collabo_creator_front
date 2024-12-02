@@ -29,15 +29,20 @@ export const getCategoriesByCreator = async (creatorId: string): Promise<IUserCa
     }
 };
 
-export const getProductList = async (page?:number, size?:number): Promise<IPageResponse<IProduct>> => {
+export const getProductList = async (
+    page: number,
+    size: number,
+    creatorId: string,
+): Promise<IPageResponse<IProduct>> => {
+    const pageValue: number = page || 1;
+    const sizeValue: number = size || 10;
 
-    const pageValue:number = page || 1
-    const sizeValue:number = size || 10
+    const res = await jwtAxios.get(`${host}/list`, {
+        params: { page: pageValue, size: sizeValue, creatorId },
+    });
 
-    const result = await jwtAxios.get(`${host}/list?page=${pageValue}&size=${sizeValue}`)
-
-    return result.data;
-}
+    return res.data;
+};
 
 export const getProductOne = async (productNo:number): Promise<IProduct> => {
 
@@ -46,11 +51,18 @@ export const getProductOne = async (productNo:number): Promise<IProduct> => {
     return result.data;
 }
 
-// 상품 검색
-export const searchProduct = async (page?:number, size?:number, productName?: string, startDate ?:string, endDate ?: string ): Promise<IPageResponse<IProduct>> => {
+export const updateProduct = async (creatorId: string, product: IProduct): Promise<void> => {
+    const { productNo, ...productData } = product; // Extract productNo for URL
+    const response = await jwtAxios.put(
+        `${host}/modify/${productNo}`,
+        productData,
+        {
+            params: { creatorId },
+            headers: { "Content-Type": "application/json" },
+        }
+    );
 
-    const params = {page: String(page), size: String(size), productName, startDate, endDate}
-
-    const result = await jwtAxios.get(`${host}/search`, {params})
-    return result.data;
-}
+    if (response.status !== 200) {
+        throw new Error("Failed to update product");
+    }
+};
