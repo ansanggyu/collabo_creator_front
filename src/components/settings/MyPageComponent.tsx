@@ -1,42 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getMyPage, updateMyPage } from "../../apis/mypage/myPageAPI";
+import { ICreator } from "../../types/icreator";
+import Cookies from "js-cookie";
 
 function MyPageComponent() {
-    const [profile, setProfile] = useState({
-        username: "홍길동",
-        email: "user@example.com",
-        phone: "010-1234-5678",
-    });
+    const [creatorData, setCreatorData] = useState<ICreator | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const navigate = useNavigate();
+    const creatorId = Cookies.get("creatorlogin") ? JSON.parse(Cookies.get("creatorlogin")!).creatorId : null;
 
-    const [settlementInfo, setSettlementInfo] = useState({
-        bankName: "",
-        accountNumber: "",
-    });
+    // 데이터 로드
+    useEffect(() => {
+        if (!creatorId) {
+            alert("로그인이 필요합니다.");
+            navigate("/login");
+            return;
+        }
 
-    const [settings, setSettings] = useState({
-        emailNotifications: true,
-        smsNotifications: false,
-    });
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const data = await getMyPage(creatorId);
+                setCreatorData(data);
+            } catch (error: any) {
+                console.error("Failed to fetch MyPage data:", error.message);
+                alert("마이페이지 데이터를 불러오는 데 실패했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setProfile({ ...profile, [name]: value });
+        fetchData();
+    }, [creatorId, navigate]);
+
+    // 데이터 변경 핸들러
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
+        setCreatorData((prev) =>
+            prev ? { ...prev, [name]: type === "checkbox" ? checked : value } : null
+        );
     };
 
-    const handleSettlementChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setSettlementInfo({ ...settlementInfo, [name]: value });
+    // 데이터 저장
+    const handleSave = async () => {
+        if (!creatorId || !creatorData) return;
+
+        try {
+            await updateMyPage(creatorId, creatorData);
+            alert("모든 정보가 성공적으로 저장되었습니다.");
+        } catch (error: any) {
+            console.error("Failed to update MyPage data:", error.message);
+            alert("마이페이지 수정에 실패했습니다.");
+        }
     };
 
-    const toggleSetting = (key: keyof typeof settings) => {
-        setSettings({ ...settings, [key]: !settings[key] });
-    };
+    if (loading) return <div>로딩 중...</div>;
 
-    const handleSave = () => {
-        console.log("수정된 개인정보:", profile);
-        console.log("저장된 정산 정보:", settlementInfo);
-        console.log("저장된 설정:", settings);
-        alert("모든 정보가 성공적으로 저장되었습니다.");
-    };
+    if (!creatorData) return <div>데이터를 불러오지 못했습니다.</div>;
 
     return (
         <div className="max-w-3xl mx-auto p-6 space-y-10 bg-gray-50 min-h-screen">
@@ -50,9 +71,9 @@ function MyPageComponent() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
                         <input
                             type="text"
-                            name="username"
-                            value={profile.username}
-                            onChange={handleProfileChange}
+                            name="creatorName"
+                            value={creatorData.creatorName}
+                            onChange={handleChange}
                             placeholder="이름을 입력하세요"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -61,9 +82,9 @@ function MyPageComponent() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
                         <input
                             type="email"
-                            name="email"
-                            value={profile.email}
-                            onChange={handleProfileChange}
+                            name="creatorEmail"
+                            value={creatorData.creatorEmail}
+                            onChange={handleChange}
                             placeholder="이메일 주소를 입력하세요"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -72,9 +93,9 @@ function MyPageComponent() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">전화번호</label>
                         <input
                             type="text"
-                            name="phone"
-                            value={profile.phone}
-                            onChange={handleProfileChange}
+                            name="creatorPhone"
+                            value={creatorData.creatorPhone}
+                            onChange={handleChange}
                             placeholder="전화번호를 입력하세요"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -90,9 +111,9 @@ function MyPageComponent() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">은행명</label>
                         <input
                             type="text"
-                            name="bankName"
-                            value={settlementInfo.bankName}
-                            onChange={handleSettlementChange}
+                            name="creatorBank"
+                            value={creatorData.creatorBank}
+                            onChange={handleChange}
                             placeholder="은행명을 입력하세요"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -101,9 +122,9 @@ function MyPageComponent() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">계좌번호</label>
                         <input
                             type="text"
-                            name="accountNumber"
-                            value={settlementInfo.accountNumber}
-                            onChange={handleSettlementChange}
+                            name="creatorAccount"
+                            value={creatorData.creatorAccount}
+                            onChange={handleChange}
                             placeholder="계좌번호를 입력하세요"
                             className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -118,8 +139,9 @@ function MyPageComponent() {
                     <label className="flex items-center">
                         <input
                             type="checkbox"
-                            checked={settings.emailNotifications}
-                            onChange={() => toggleSetting("emailNotifications")}
+                            name="emailNotifications"
+                            checked={creatorData.emailNotifications}
+                            onChange={handleChange}
                             className="h-5 w-5 text-blue-500 focus:ring-2 focus:ring-blue-500 rounded"
                         />
                         <span className="ml-3 text-gray-700">이메일 알림 받기</span>
@@ -127,8 +149,9 @@ function MyPageComponent() {
                     <label className="flex items-center">
                         <input
                             type="checkbox"
-                            checked={settings.smsNotifications}
-                            onChange={() => toggleSetting("smsNotifications")}
+                            name="smsNotifications"
+                            checked={creatorData.smsNotifications}
+                            onChange={handleChange}
                             className="h-5 w-5 text-blue-500 focus:ring-2 focus:ring-blue-500 rounded"
                         />
                         <span className="ml-3 text-gray-700">SMS 알림 받기</span>
