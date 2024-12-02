@@ -62,7 +62,6 @@ function AsideMenuComponent() {
         {
             mainName: "설정",
             subMenus: [
-                { name: "디자인 모드", toPath: "/designmode" },
                 { name: "My Page", toPath: "/mypage" },
             ],
             basicPath: "/settings",

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getOrderDetail } from "../../apis/order/orderAPI.ts";
 import { IOrder } from "../../types/iorder.ts";
+import Cookies from "js-cookie";
 
 interface OrderDetailProps {
     orderId: string;
@@ -10,11 +11,36 @@ interface OrderDetailProps {
 function OrderDetailComponent({ orderId, onClose }: OrderDetailProps) {
     const [order, setOrder] = useState<IOrder | null>(null);
     const [loading, setLoading] = useState(true);
+    const [creatorId, setCreatorId] = useState<string | null>(null);
+
+    useEffect(() => {
+        // 쿠키에서 creatorId 가져오기
+        const cookieCreatorLogin = Cookies.get("creatorlogin");
+        if (!cookieCreatorLogin) {
+            alert("creatorId 쿠키가 없습니다. 접근이 제한됩니다.");
+            throw new Error("쿠키에서 creatorId를 가져올 수 없습니다.");
+        }
+
+        try {
+            const parsedCookie = JSON.parse(cookieCreatorLogin);
+            if (parsedCookie.creatorId) {
+                setCreatorId(parsedCookie.creatorId);
+            } else {
+                throw new Error("쿠키에서 creatorId가 없습니다.");
+            }
+        } catch (error) {
+            console.error("쿠키 파싱 중 오류 발생:", error);
+            alert("쿠키 데이터를 확인할 수 없습니다.");
+        }
+    }, []);
 
     useEffect(() => {
         const fetchOrderDetail = async () => {
+            if (!creatorId) return; // creatorId가 없으면 실행하지 않음
+
+            setLoading(true);
             try {
-                const data = await getOrderDetail(Number(orderId)); // API 호출
+                const data = await getOrderDetail(Number(orderId), creatorId); // creatorId 전달
                 setOrder(data);
             } catch (error) {
                 console.error("Failed to fetch order detail:", error);
@@ -24,7 +50,7 @@ function OrderDetailComponent({ orderId, onClose }: OrderDetailProps) {
         };
 
         fetchOrderDetail();
-    }, [orderId]);
+    }, [orderId, creatorId]);
 
     if (loading) {
         return <div className="p-6 bg-white rounded-lg shadow-lg">Loading...</div>;
