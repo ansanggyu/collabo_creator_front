@@ -35,6 +35,12 @@ export interface IUserCategory {
     categoryName: string;
 }
 
+export interface ICreatorAnalytics {
+    totalPrice: number;
+    status: string;
+    reason: string;
+}
+
 export interface IInventoryProduct {
     id: number; // 상품 ID
     name: string; // 상품명

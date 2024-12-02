@@ -4,7 +4,8 @@ import signinSlice from "./slices/signinSlice.ts";
 const projectStore = configureStore({
     reducer: {
         signin: signinSlice
-    }
+    },
+    devTools: true
 });
 
 export type RootState = ReturnType<typeof projectStore.getState>

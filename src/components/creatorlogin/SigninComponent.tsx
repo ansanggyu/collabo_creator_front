@@ -1,7 +1,7 @@
 import { ISigninParam } from "../../types/icreatorlogin.ts";
 import { ChangeEvent, useEffect, useState } from "react";
 import useSignin from "../../hooks/useSignin.ts";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const initialState: ISigninParam = {
     creatorId: '',
@@ -9,12 +9,12 @@ const initialState: ISigninParam = {
 }
 
 function SigninComponent() {
-    const [param, setParam] = useState(initialState)
-    const { doSignin } = useSignin()
-    const [errorMessage, setErrorMessage] = useState<string | null>(null)
-    const [rememberId, setRememberId] = useState(false)
-    const location = useLocation()
-    const navigate = useNavigate()
+    const [param, setParam] = useState(initialState);
+    const { doSignin } = useSignin();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [rememberId, setRememberId] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const savedId = localStorage.getItem("rememberedcreatorId");
@@ -41,7 +41,12 @@ function SigninComponent() {
     const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         try {
-            await doSignin(param);
+            console.log("로그인 요청 데이터:", param);
+
+            // `doSignin` 호출 및 Thunk 응답 확인
+            const response = await doSignin(param);
+
+            console.log("doSignin Thunk Response:", response);
 
             // "아이디 저장"이 선택되었으면 로컬 스토리지에 creatorId 저장
             if (rememberId) {
@@ -51,10 +56,10 @@ function SigninComponent() {
             }
 
             // 로그인 성공 후, 메인 페이지로 리디렉션
-            navigate("/main")
-        } catch (exception:any) {
-            // 로그인 실패 시 error 처리 (이미 처리된 메시지 출력)
-            console.log(exception.response?.data?.message || exception.message);
+            navigate("/main");
+        } catch (exception: any) {
+            // 로그인 실패 시 error 처리
+            console.error("로그인 실패:", exception.response?.data?.message || exception.message);
         }
     };
 
@@ -87,7 +92,7 @@ function SigninComponent() {
                     </div>
                     <div className="mb-8">
                         <input
-                            type="creatorPassword"
+                            type="password"
                             name="creatorPassword"
                             className="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 shadow-md"
                             placeholder="패스워드"

@@ -1,20 +1,28 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
 import { postSignin } from "../apis/creatorlogin/creatorloginAPI.ts";
-import {ICreatorlogin, ISigninParam} from "../types/icreatorlogin.ts";
+import { ICreatorlogin, ISigninParam } from "../types/icreatorlogin.ts";
 
 const initialState: ICreatorlogin = {
-    creatorId: '',
+    creatorId: '', // 초기값 유지
     creatorPassword: '',
     accessToken: '',
     refreshToken: '',
     creatorName: ''
 };
 
-// `postSigninThunk`: 로그인 API 호출
+// 로그인 API 호출
 export const postSigninThunk = createAsyncThunk<ICreatorlogin, ISigninParam>(
-    'signin/postSigninThunk',
-    postSignin // API 호출 함수
+    "signin/postSigninThunk",
+    async (params, thunkAPI) => {
+        try {
+            const response = await postSignin(params);
+            console.log("postSigninThunk API Response:", response); // API 응답 로그
+            return response; // API 응답 반환
+        } catch (error) {
+            console.error("postSigninThunk Error:", error);
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
 );
 
 const signinSlice = createSlice({
@@ -22,7 +30,7 @@ const signinSlice = createSlice({
     initialState,
     reducers: {
         signin: (state, action) => {
-            console.log("Signin action", state, action);
+            console.log("Signin Action Dispatched:", action.payload);
             const { creatorId, creatorPassword, accessToken, refreshToken, creatorName } = action.payload;
 
             // 상태 갱신
@@ -31,33 +39,35 @@ const signinSlice = createSlice({
             state.accessToken = accessToken || state.accessToken;
             state.refreshToken = refreshToken || state.refreshToken;
             state.creatorName = creatorName || state.creatorName;
+
+            console.log("Updated State (signin):", state);
         },
         signout: () => {
-            // 상태 초기화
-            return { ...initialState };
+            console.log("Signout Action Dispatched");
+            return { ...initialState }; // 상태 초기화
         }
     },
     extraReducers: (builder) => {
         builder
-            // postSigninThunk가 성공적으로 완료되었을 때
             .addCase(postSigninThunk.fulfilled, (state, action) => {
-                const result = action.payload; // API 응답 데이터
-                console.log("extraReducer) API just called successfully...");
-                if (result) {
-                    state.creatorId = result.creatorId;
-                    state.creatorPassword = result.creatorPassword;
-                    state.accessToken = result.accessToken;
-                    state.refreshToken = result.refreshToken;
-                    state.creatorName = result.creatorName;
+                console.log("postSigninThunk.fulfilled Action Payload:", action.payload);
+
+                if (action.payload) {
+                    const { creatorId, creatorPassword, accessToken, refreshToken, creatorName } = action.payload;
+                    state.creatorId = creatorId;
+                    state.creatorPassword = creatorPassword;
+                    state.accessToken = accessToken;
+                    state.refreshToken = refreshToken;
+                    state.creatorName = creatorName;
                 }
+
+                console.log("Updated State (fulfilled):", state);
             })
-            // postSigninThunk가 요청 중일 때
-            .addCase(postSigninThunk.pending, () => {
+            .addCase(postSigninThunk.pending, (state) => {
                 console.log("postSigninThunk.pending");
             })
-            // postSigninThunk가 실패했을 때
-            .addCase(postSigninThunk.rejected, () => {
-                console.log("postSigninThunk.rejected");
+            .addCase(postSigninThunk.rejected, (state, action) => {
+                console.error("postSigninThunk.rejected:", action.error.message);
             });
     }
 });
