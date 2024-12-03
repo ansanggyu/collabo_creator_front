@@ -1,10 +1,14 @@
+import OfflineManagement from "../../components/offlinemanagement/OfflineManagementComponent";
+import BasicLayout from "../../layouts/BasicLayout.tsx";
 
-const OfflineManagementPage = () => {
+function OfflineBlogPage() {
     return (
-        <div>
-            -오프라인매장관리페이지-
-        </div>
+        <BasicLayout>
+            <div className="container mx-auto">
+                <OfflineManagement/>
+            </div>
+        </BasicLayout>
     );
-};
+}
 
-export default OfflineManagementPage;
+export default OfflineBlogPage;

@@ -10,16 +10,16 @@ const orderRouter = {
         {
             path: "list",
             element: (
-                <Suspense fallback={<LoadingPage />}>
-                    <OrderListPage />
+                <Suspense fallback={<LoadingPage/>}>
+                    <OrderListPage/>
                 </Suspense>
             ),
         },
         {
-            path: "detail/:id",
+            path: "detail",
             element: (
-                <Suspense fallback={<LoadingPage />}>
-                    <OrderDetailPage />
+                <Suspense fallback={<LoadingPage/>}>
+                    <OrderDetailPage/>
                 </Suspense>
             ),
         },

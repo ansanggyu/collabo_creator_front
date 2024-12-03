@@ -1,14 +1,14 @@
-import DashboardComponent from "../../components/dashboard/DashboardComponent";
+import QnADetailComponent from "../../components/qna/QnADetailComponent.tsx";
 import BasicLayout from "../../layouts/BasicLayout.tsx";
 
-function DashboardPage() {
+function QnADetailPage() {
     return (
         <BasicLayout>
             <div className="container mx-auto">
-                <DashboardComponent />
+                <QnADetailComponent/>
             </div>
         </BasicLayout>
     );
 }
 
-export default DashboardPage;
+export default QnADetailPage;

@@ -1,12 +1,14 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
 import {lazy, Suspense} from "react";
-import OfflineManagementRouter from "./offlinemanagementrouter/OfflineManagementRouter.tsx";
+import OfflineManagementRouter from "./offlineManagementRouter.tsx";
 import AnalyticsRouter from "./analyticsRouter.tsx";
 import CategoryRouter from "./categoryRouter.tsx";
 import DashboardRouter from "./dashboardRouter.tsx";
 import OrderRouter from "./orderRouter.tsx";
 import ProductRouter from "./productRouter.tsx";
 import ReviewRouter from "./reviewRouter.tsx";
+import SettingsRouter from "./settingsRouter.tsx";
+import QnaRouter from "./qnaRouter.tsx";
 
 const LoadingPage = lazy(() => import("../pages/common/LoadingPage.tsx"))
 const CreatorMainPage = lazy(()=> import("../pages/mainpage/CreatorMainPage.tsx"))
@@ -33,7 +35,9 @@ const creatorMainRouter = createBrowserRouter([
     DashboardRouter,
     OrderRouter,
     ProductRouter,
-    ReviewRouter
+    ReviewRouter,
+    SettingsRouter,
+    QnaRouter,
 ])
 
 export default creatorMainRouter

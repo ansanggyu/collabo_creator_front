@@ -29,19 +29,18 @@ function AsideMenuComponent() {
         {
             mainName: "주문 관리",
             subMenus: [
-                { name: "주문 내역", toPath: "/list" },
-                { name: "환불 처리", toPath: "/refund" },
+                { name: "주문 내역", toPath: "/list" }
             ],
             basicPath: "/order",
             iconName: "order.png",
         },
         {
-            mainName: "리뷰 및 피드백 관리",
+            mainName: "리뷰 및 QnA 관리",
             subMenus: [
-                { name: "리뷰 목록", toPath: "/list" },
-                { name: "리뷰 답변", toPath: "/reply/:id" },
+                { name: "리뷰 목록", toPath: "review/list" },
+                { name: "QnA 목록", toPath: "qna/list" },
             ],
-            basicPath: "/review",
+            basicPath: "/",
             iconName: "review.png",
         },
         {
@@ -49,31 +48,21 @@ function AsideMenuComponent() {
             subMenus: [
                 { name: "매출 그래프", toPath: "/sales" },
                 { name: "상품별 매출 통계", toPath: "/products" },
+                { name: "환불/취소율 통계", toPath: "/refunds" },
             ],
             basicPath: "/analytics",
             iconName: "analytics.png",
         },
         {
-            mainName: "상품 카테고리 관리",
-            subMenus: [
-                { name: "카테고리 추가", toPath: "/add" },
-                { name: "카테고리 수정", toPath: "/edit/:id" },
-            ],
-            basicPath: "/category",
-            iconName: "category.png",
-        },
-        {
             mainName: "오프라인 매장 관리",
-            subMenus: [{ name: "매장 소개", toPath: "/blog" }],
-            basicPath: "/offline",
+            subMenus: [{ name: "매장 소개", toPath: "/" }],
+            basicPath: "/offlinestore",
             iconName: "offline.png",
         },
         {
             mainName: "설정",
             subMenus: [
-                { name: "프로필 관리", toPath: "/profile" },
-                { name: "정산 정보 관리", toPath: "/settlement" },
-                { name: "알림 설정", toPath: "/notifications" },
+                { name: "My Page", toPath: "/mypage" },
             ],
             basicPath: "/settings",
             iconName: "settings.png",
@@ -84,24 +73,9 @@ function AsideMenuComponent() {
         <aside className="z-20 hidden w-64 overflow-y-auto bg-side-navy md:block flex-shrink-0">
             <div className="py-4 text-neutral-800">
                 {/* 로고 및 대시보드 메뉴 */}
-                <Link to="/" className="flex items-center justify-center mb-4 p-2">
+                <Link to="/main" className="flex items-center justify-center mb-4 p-2">
                     <img src={logo} alt="Logo" className="px-16" />
                 </Link>
-                <ul className="mt-1 space-y-2 text-txt-grey">
-                    <li className="relative px-6 py-3">
-                        <Link
-                            to="/"
-                            className="inline-flex items-center text-sm font-semibold text-blue-950"
-                        >
-                            <img
-                                src="/src/assets/img/icons/dashboard.png"
-                                alt="Dashboard Icon"
-                                className="w-5 h-5"
-                            />
-                            <span className="ml-4">대시보드</span>
-                        </Link>
-                    </li>
-                </ul>
                 {/* Depth1 메뉴 */}
                 <ul className="mt-4 space-y-2 text-txt-grey">
                     {menus.map((menu, idx) => (

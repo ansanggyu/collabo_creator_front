@@ -1,48 +1,27 @@
+import {useAppSelector} from "../../hooks/rtk.ts";
+import {useEffect, useState} from "react";
+import {Navigate} from "react-router-dom";
+import SigninComponent from "../../components/creatorlogin/SigninComponent.tsx";
 
-function AdminLoginPage() {
+function CreatorLoginPage() {
+    const creatorlogin = useAppSelector((state) => state.signin); // 리덕스에서 adminlogin 상태 가져오기
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    useEffect(() => {
+        if (creatorlogin.creatorId) {
+            setIsRedirecting(true); // 로그인된 경우 리디렉션 플래그를 true로 설정
+        }
+    }, [creatorlogin]); // adminlogin 전체를 의존성 배열에 넣어 상태 변경을 감지
+
+    if (isRedirecting) {
+        return <Navigate to="/main" replace />; // 리디렉션 처리
+    }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg overflow-hidden p-8">
-                <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-8">관리자 로그인</h1>
-                <form>
-                    <div className="mb-6">
-                        <input
-                            type="text"
-                            name="adminId"
-                            className="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 shadow-md"
-                            placeholder="아이디"
-                        />
-                    </div>
-                    <div className="mb-8">
-                        <input
-                            type="password"
-                            name="pw"
-                            className="w-full border-2 border-gray-300 rounded-lg p-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 shadow-md"
-                            placeholder="패스워드"
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="checkbox"
-                                className="text-blue-500"
-                            />
-                            <label className="text-gray-700">아이디 저장</label>
-                        </div>
-                    </div>
-
-                    {/*<button*/}
-                    {/*    onClick={handleClick}*/}
-                    {/*    className="w-full bg-blue-500 text-white py-3 px-6 rounded-md hover:bg-blue-600 transition duration-300 transform hover:scale-105 shadow-lg"*/}
-                    {/*>*/}
-                    {/*    로그인*/}
-                    {/*</button>*/}
-                </form>
-            </div>
+        <div className="justify-center h-full">
+            <SigninComponent />
         </div>
     );
 }
 
-export default AdminLoginPage;
+export default CreatorLoginPage;
