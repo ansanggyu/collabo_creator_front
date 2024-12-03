@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IOfflineStore } from "../../types/iofflinestore";
 import Cookies from "js-cookie";
 import { getOfflineStoreList } from "../../apis/offlinestore/offlineStoreAPI";
+import MapComponent from "../map/MapComponent.tsx"; // 지도 컴포넌트 경로를 설정하세요.
 
 function OfflineManagementComponent() {
     const [stores, setStores] = useState<IOfflineStore[]>([]);
@@ -20,7 +21,7 @@ function OfflineManagementComponent() {
         }
 
         try {
-            const parsedCookie = JSON.parse(cookieCreatorLogin); // 쿠키 데이터를 JSON으로 변환
+            const parsedCookie = JSON.parse(cookieCreatorLogin);
             if (parsedCookie.creatorId) {
                 setCreatorId(parsedCookie.creatorId);
             } else {
@@ -35,10 +36,10 @@ function OfflineManagementComponent() {
     // 매장 리스트 가져오기
     useEffect(() => {
         const fetchStores = async () => {
-            if (!creatorId) return; // creatorId가 없으면 실행하지 않음
+            if (!creatorId) return;
             setLoading(true);
             try {
-                const data = await getOfflineStoreList(creatorId); // API 호출
+                const data = await getOfflineStoreList(creatorId);
                 setStores(data);
             } catch (err) {
                 console.error("매장을 불러오는 데 실패했습니다:", err);
@@ -55,9 +56,8 @@ function OfflineManagementComponent() {
         navigate(`/offlinestore/edit/${storeNo}`, { state: { creatorId } });
     };
 
-
     const goToRegister = () => {
-        navigate("/offlinestore/add"); // 매장 등록 페이지로 이동
+        navigate("/offlinestore/add");
     };
 
     if (loading) {
@@ -83,16 +83,28 @@ function OfflineManagementComponent() {
                 {stores.map((store) => (
                     <div
                         key={store.storeNo}
-                        className="border rounded p-4 shadow cursor-pointer"
+                        className="border rounded-md p-2 shadow-sm flex items-start space-x-4"
                         onClick={() => goToEdit(store.storeNo)} // 수정 화면으로 이동
                     >
-                        <img
-                            src={store.storeImage || "default-image-path.jpg"}
-                            alt={store.storeName}
-                            className="w-full h-48 object-cover rounded mb-4"
-                        />
-                        <h2 className="text-xl font-bold">{store.storeName}</h2>
-                        <p>{store.storeAddress}</p>
+                        {/* 이미지 섹션 */}
+                        <div className="w-1/3">
+                            <img
+                                src={store.storeImage || "default-image-path.jpg"}
+                                alt={store.storeName}
+                                className="w-full h-32 object-cover rounded"
+                            />
+                        </div>
+
+                        {/* 내용 및 지도 섹션 */}
+                        <div className="w-2/3 flex flex-col space-y-2">
+                            <div>
+                                <h2 className="text-lg font-bold">{store.storeName}</h2>
+                                <p className="text-sm text-gray-600">{store.storeAddress}</p>
+                            </div>
+
+                            {/* 지도 섹션 */}
+                            <MapComponent latitude={store.latitude} longitude={store.longitude}/>
+                        </div>
                     </div>
                 ))}
             </div>
