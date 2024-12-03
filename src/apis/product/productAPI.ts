@@ -33,13 +33,21 @@ export const getProductList = async (
     page: number,
     size: number,
     creatorId: string,
+    searchQuery?: string,
+    selectedStatus?: string,
+    selectedCategory?: number
 ): Promise<IPageResponse<IProduct>> => {
-    const pageValue: number = page || 1;
-    const sizeValue: number = size || 10;
+    const params: any = {
+        page: page || 1,
+        size: size || 10,
+        creatorId,
+    };
 
-    const res = await jwtAxios.get(`${host}/list`, {
-        params: { page: pageValue, size: sizeValue, creatorId },
-    });
+    if (searchQuery) params.searchQuery = searchQuery.trim();
+    if (selectedStatus && selectedStatus !== "전체") params.status = selectedStatus;
+    if (selectedCategory !== null && selectedCategory !== undefined) params.categoryNo = selectedCategory;
+
+    const res = await jwtAxios.get(`${host}/list`, { params });
 
     return res.data;
 };

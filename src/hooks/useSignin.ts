@@ -17,7 +17,7 @@ const useSignin = () => {
 
             cookies.set("creatorlogin", data, { path: "/" });
             return data;
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("useSignin.ts failed:", error);
             throw error;
         }
