@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import {KakaoMaps} from "../../types/ikakaomap.ts";
 
 interface MapComponentProps {
     latitude: string;
@@ -10,49 +11,42 @@ const MapComponent = ({ latitude, longitude }: MapComponentProps) => {
 
     useEffect(() => {
         const loadKakaoMap = () => {
-            if (window.kakao && mapContainer.current) {
-                const map = new window.kakao.maps.Map(mapContainer.current, {
-                    center: new window.kakao.maps.LatLng(parseFloat(latitude), parseFloat(longitude)),
-                    level: 3,
-                });
-
-                const marker = new window.kakao.maps.Marker({
-                    position: new window.kakao.maps.LatLng(parseFloat(latitude), parseFloat(longitude)),
-                });
-
-                marker.setMap(map);
+            if (!window.kakao || !window.kakao.maps) {
+                console.error("Kakao Maps API is not available.");
+                return;
             }
+
+            window.kakao.maps.load(() => {
+                if (mapContainer.current) {
+                    const kakao = window.kakao;
+                    const center = new kakao.maps.LatLng(
+                        parseFloat(latitude),
+                        parseFloat(longitude)
+                    );
+                    const map = new kakao.maps.Map(mapContainer.current, {
+                        center,
+                        level: 3,
+                    });
+                    const marker = new kakao.maps.Marker({ position: center });
+                    marker.setMap(map);
+                }
+            });
         };
 
-        const loadScript = () => {
-            const existingScript = document.querySelector(
-                "script[src*='https://dapi.kakao.com/v2/maps/sdk.js']"
-            );
-
-            if (!existingScript) {
-                const script = document.createElement("script");
-                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_API_KEY}&libraries=services`;
-                script.async = true;
-
-                script.onload = () => loadKakaoMap();
-                document.head.appendChild(script);
-            } else {
-                existingScript.addEventListener("load", loadKakaoMap);
-            }
+        const addScript = () => {
+            const script = document.createElement("script");
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_API_KEY}&autoload=false&libraries=services`;
+            script.async = true;
+            script.onload = loadKakaoMap;
+            script.onerror = () => console.error("Failed to load Kakao Maps script.");
+            document.head.appendChild(script);
         };
 
-        if (window.kakao && window.kakao.maps) {
-            loadKakaoMap();
+        if (!window.kakao || !window.kakao.maps) {
+            addScript();
         } else {
-            loadScript();
+            loadKakaoMap();
         }
-
-        return () => {
-            const script = document.querySelector(
-                "script[src*='https://dapi.kakao.com/v2/maps/sdk.js']"
-            );
-            script?.removeEventListener("load", loadKakaoMap);
-        };
     }, [latitude, longitude]);
 
     return <div ref={mapContainer} style={{ width: "100%", height: "150px", borderRadius: "8px" }} />;
@@ -62,6 +56,6 @@ export default MapComponent;
 
 declare global {
     interface Window {
-        kakao: any;
+        kakao: KakaoMaps;
     }
 }
