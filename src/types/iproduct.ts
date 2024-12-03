@@ -36,9 +36,9 @@ export interface IUserCategory {
 }
 
 export interface ICreatorAnalytics {
-    totalPrice: number;
-    status: string;
-    reason: string;
+    month: string;
+    totalSales: number;
+    orderCount: number;
 }
 
 export interface IProductStats {

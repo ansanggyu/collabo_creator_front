@@ -4,6 +4,7 @@ export interface ICreatorlogin {
     accessToken: string;
     refreshToken: string;
     creatorName: string;
+    loading: boolean;
 }
 
 export interface ISigninParam {

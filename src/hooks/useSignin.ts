@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "./rtk.ts";
-import { postSigninThunk, signin, signout } from "../slices/signinSlice.ts";
+import { postSigninThunk, signout } from "../slices/signinSlice.ts";
 import { Cookies } from "react-cookie";
 import { ISigninParam } from "../types/icreatorlogin.ts";
 
