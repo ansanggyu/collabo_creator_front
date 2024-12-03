@@ -24,19 +24,35 @@ const MapComponent = ({ latitude, longitude }: MapComponentProps) => {
             }
         };
 
-        if (window.kakao && window.kakao.maps) {
-            loadKakaoMap();
-        } else {
-            const script = document.querySelector(
+        const loadScript = () => {
+            const existingScript = document.querySelector(
                 "script[src*='https://dapi.kakao.com/v2/maps/sdk.js']"
             );
 
-            script?.addEventListener("load", loadKakaoMap);
+            if (!existingScript) {
+                const script = document.createElement("script");
+                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.REACT_APP_KAKAO_API_KEY}&libraries=services`;
+                script.async = true;
 
-            return () => {
-                script?.removeEventListener("load", loadKakaoMap);
-            };
+                script.onload = () => loadKakaoMap();
+                document.head.appendChild(script);
+            } else {
+                existingScript.addEventListener("load", loadKakaoMap);
+            }
+        };
+
+        if (window.kakao && window.kakao.maps) {
+            loadKakaoMap();
+        } else {
+            loadScript();
         }
+
+        return () => {
+            const script = document.querySelector(
+                "script[src*='https://dapi.kakao.com/v2/maps/sdk.js']"
+            );
+            script?.removeEventListener("load", loadKakaoMap);
+        };
     }, [latitude, longitude]);
 
     return <div ref={mapContainer} style={{ width: "100%", height: "150px", borderRadius: "8px" }} />;
