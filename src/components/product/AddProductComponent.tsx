@@ -3,12 +3,13 @@ import { addProduct } from "../../apis/product/productAPI.ts";
 import { IProductRequest, IUserCategory } from "../../types/iproduct";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
-import {uploadImages} from "../../apis/image/imageUploadAPI.ts";
+import {uploadS3Images} from "../../apis/image/imageUploadAPI.ts";
 import axios from "axios";
 import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
 import AddCategoryRedirect from "../category/AddCategoryRedirect.tsx";
 
 const initialState: IProductRequest = {
+    productNo: 0,
     productName: "",
     productPrice: 0,
     stock: 0,
@@ -84,15 +85,17 @@ function AddProductComponent() {
         }
 
         try {
-            // 1. 이미지 업로드
-            const validFiles = imageFiles.filter((file) => file !== undefined) as File[]; // 유효한 파일 필터링
-            const uploadedUrls = await uploadImages(validFiles);
+            // 1. 유효한 파일 필터링
+            const validFiles = imageFiles.filter((file) => file !== undefined) as File[];
+
+            // 2. S3 이미지 업로드
+            const uploadedUrls = await uploadS3Images(validFiles); // API에서 이미지 URL 리스트 반환
             if (!uploadedUrls || uploadedUrls.length === 0) {
                 alert("이미지 업로드에 실패했습니다.");
                 return;
             }
 
-            // 2. 상품 데이터 준비
+            // 3. 상품 데이터 준비
             const productData: IProductRequest = {
                 productName,
                 productDescription,
@@ -101,10 +104,10 @@ function AddProductComponent() {
                 productStatus: 1,
                 categoryNo: selectedCategory,
                 creatorId,
-                productImages: uploadedUrls, // 서버에 업로드된 이미지 URL
+                productImages: uploadedUrls.map((url, index) => ({ productImageUrl: url, productImageOrd: index })), // 순서 추가
             };
 
-            // 3. 상품 등록
+            // 4. 상품 등록
             await addProduct(productData);
             alert("상품이 성공적으로 등록되었습니다!");
             resetForm();
@@ -118,6 +121,7 @@ function AddProductComponent() {
             alert("상품 등록에 실패했습니다.");
         }
     };
+
 
     // 폼 초기화 함수
     const resetForm = () => {

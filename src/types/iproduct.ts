@@ -14,20 +14,25 @@ export interface IProduct{
 
     creatorName : string,
 
-    productImageOrd : number,
-    productImageUrl : string
+    productImages: IProductImage[];
 
 }
 
 export interface IProductRequest {
+    productNo?: number;
     productName: string;
+    productDescription: string;
     productPrice: number;
     stock: number;
-    productDescription: string;
     productStatus: number;
     categoryNo: number;
     creatorId: string;
-    productImages: string[];
+    productImages: IProductImage[]; // 이미지 배열
+}
+
+export interface IProductImage {
+    productImageUrl: string;
+    productImageOrd: number; // 이미지 순서
 }
 
 export interface IUserCategory {

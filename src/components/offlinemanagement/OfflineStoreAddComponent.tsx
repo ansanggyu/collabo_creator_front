@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { IOfflineStore } from "../../types/iofflinestore.ts";
 import { registerOfflineStore } from "../../apis/offlinestore/offlineStoreAPI.ts";
-import { uploadImages } from "../../apis/image/imageUploadAPI.ts"; // 수정: 이미지 다중 업로드 API
+import { uploadS3Images } from "../../apis/image/imageUploadAPI.ts"; // 수정: 이미지 다중 업로드 API
 
 function OfflineStoreAddComponent() {
     const navigate = useNavigate();
@@ -43,7 +43,7 @@ function OfflineStoreAddComponent() {
             // 1. 이미지 업로드
             let uploadedImageUrls: string[] = [];
             if (imageFiles.length > 0) {
-                uploadedImageUrls = await uploadImages(imageFiles); // 다중 이미지 업로드
+                uploadedImageUrls = await uploadS3Images(imageFiles); // 다중 이미지 업로드
             } else {
                 alert("이미지를 업로드해주세요.");
                 return;
