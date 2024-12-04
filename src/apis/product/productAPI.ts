@@ -11,7 +11,10 @@ export const addProduct = async (productData: IProductRequest): Promise<void> =>
         },
     });
 
-    if (result.status !== 201) {
+    console.log("Response status:", result.status);
+    console.log("Response data:", result.data);
+
+    if (result.status !== 200) {
         throw new Error("Failed to add product");
     }
 };

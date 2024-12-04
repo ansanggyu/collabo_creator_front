@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { addProduct } from "../../apis/product/productAPI.ts";
 import { IProductRequest, IUserCategory } from "../../types/iproduct";
-import {useSelector} from "react-redux";
-import {RootState} from "../../store.ts";
-import AddCategoryRedirect from "../category/AddCategoryRedirect.tsx";
-import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store.ts";
+import {uploadImages} from "../../apis/image/imageUploadAPI.ts";
+import axios from "axios";
 
 const initialState: IProductRequest = {
     productName: "",
@@ -24,14 +24,15 @@ function AddProductComponent() {
     const [productStock, setProductStock] = useState(initialState.stock.toString());
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
     const [categories, setCategories] = useState<IUserCategory[]>([]);
-    const [images, setImages] = useState<(string | undefined)[]>(Array(6).fill(undefined)); // 이미지 최대 6개
+    const [imageFiles, setImageFiles] = useState<(File | undefined)[]>(Array(6).fill(undefined)); // 이미지 최대 6개
+    const [previewImages, setPreviewImages] = useState<(string | undefined)[]>(Array(6).fill(undefined)); // Base64 미리보기
 
     const creatorId = useSelector((state: RootState) => state.signin.creatorId);
 
     // 카테고리 불러오기
     useEffect(() => {
         const fetchCategories = async () => {
-            if (!creatorId) return; // creatorId가 없으면 실행하지 않음
+            if (!creatorId) return;
             try {
                 const result = await getCategoriesByCreator(creatorId);
                 setCategories(result);
@@ -47,52 +48,71 @@ function AddProductComponent() {
     const handleImageUpload = (file: File, index: number) => {
         const reader = new FileReader();
         reader.onload = () => {
-            const updatedImages = [...images];
-            updatedImages[index] = reader.result as string; // Base64로 변환
-            setImages(updatedImages);
+            const updatedPreviewImages = [...previewImages];
+            const updatedImageFiles = [...imageFiles];
+
+            updatedPreviewImages[index] = reader.result as string; // Base64 미리보기
+            updatedImageFiles[index] = file; // 실제 파일 저장
+
+            setPreviewImages(updatedPreviewImages);
+            setImageFiles(updatedImageFiles);
         };
         reader.readAsDataURL(file);
     };
 
     // 이미지 삭제 핸들러
     const handleImageDelete = (index: number) => {
-        const updatedImages = [...images];
-        updatedImages[index] = undefined; // 해당 박스를 비우기
-        setImages(updatedImages);
+        const updatedPreviewImages = [...previewImages];
+        const updatedImageFiles = [...imageFiles];
+
+        updatedPreviewImages[index] = undefined; // 미리보기 삭제
+        updatedImageFiles[index] = undefined; // 파일 삭제
+
+        setPreviewImages(updatedPreviewImages);
+        setImageFiles(updatedImageFiles);
     };
 
     // 폼 제출 핸들러
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 입력 데이터 유효성 검사
         if (!productName || !productPrice || !productStock || selectedCategory === null || !creatorId) {
             alert("모든 필드를 입력해주세요!");
             return;
         }
 
-        // 업로드된 이미지 필터링
-        const filteredImages = images.filter((image) => image !== undefined) as string[];
-
-        // 데이터 가공
-        const productData: IProductRequest = {
-            productName,
-            productDescription,
-            productPrice: Number(productPrice),
-            stock: Number(productStock),
-            productStatus: 1, // 활성 상태 (1)
-            categoryNo: selectedCategory, // 카테고리 번호
-            creatorId, // 쿠키에서 가져온 creatorId
-            productImages: filteredImages, // 업로드된 이미지 데이터
-        };
-
         try {
-            // 상품 등록 API 호출
+            // 1. 이미지 업로드
+            const validFiles = imageFiles.filter((file) => file !== undefined) as File[]; // 유효한 파일 필터링
+            const uploadedUrls = await uploadImages(validFiles);
+            if (!uploadedUrls || uploadedUrls.length === 0) {
+                alert("이미지 업로드에 실패했습니다.");
+                return;
+            }
+
+            // 2. 상품 데이터 준비
+            const productData: IProductRequest = {
+                productName,
+                productDescription,
+                productPrice: Number(productPrice),
+                stock: Number(productStock),
+                productStatus: 1,
+                categoryNo: selectedCategory,
+                creatorId,
+                productImages: uploadedUrls, // 서버에 업로드된 이미지 URL
+            };
+
+            // 3. 상품 등록
             await addProduct(productData);
             alert("상품이 성공적으로 등록되었습니다!");
             resetForm();
         } catch (error) {
-            console.error("상품 등록 실패:", error);
+            if (axios.isAxiosError(error)) {
+                console.error("Axios Error Response:", error.response?.data);
+                console.error("Axios Error Status:", error.response?.status);
+            } else {
+                console.error("Non-Axios Error:", error);
+            }
             alert("상품 등록에 실패했습니다.");
         }
     };
@@ -104,7 +124,8 @@ function AddProductComponent() {
         setProductPrice(initialState.productPrice.toString());
         setProductStock(initialState.stock.toString());
         setSelectedCategory(null);
-        setImages(Array(6).fill(undefined));
+        setPreviewImages(Array(6).fill(undefined));
+        setImageFiles(Array(6).fill(undefined));
     };
 
     return (
@@ -176,13 +197,12 @@ function AddProductComponent() {
                         ))}
                     </select>
                 </div>
-                <AddCategoryRedirect/>
 
                 {/* 이미지 업로드 */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">이미지 업로드 (최대 6개)</label>
                     <div className="grid grid-cols-3 gap-4">
-                        {images.map((image, index) => (
+                        {previewImages.map((image, index) => (
                             <div
                                 key={index}
                                 className="relative flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg"
