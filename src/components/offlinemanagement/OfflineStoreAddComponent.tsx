@@ -1,25 +1,32 @@
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import { IOfflineStore } from "../../types/iofflinestore.ts";
 import { registerOfflineStore } from "../../apis/offlinestore/offlineStoreAPI.ts";
 import { uploadS3Images } from "../../apis/image/imageUploadAPI.ts"; // 수정: 이미지 다중 업로드 API
+import { useDaumPostcodePopup } from "react-daum-postcode";
 
 function OfflineStoreAddComponent() {
     const navigate = useNavigate();
+    const open = useDaumPostcodePopup("https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js");
+
     const [storeName, setStoreName] = useState("");
     const [storeAddress, setStoreAddress] = useState("");
-    const [latitude, setLatitude] = useState("");
-    const [longitude, setLongitude] = useState("");
-    const [imageFiles, setImageFiles] = useState<File[]>([]); // 파일 리스트로 관리
+    const [storeAddressDetail, setStoreAddressDetail] = useState("");
+    const [storeZipcode, setStoreZipcode] = useState("");
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+    const handleAddressSelect = (data: any) => {
+        setStoreAddress(data.address);
+        setStoreZipcode(data.zonecode);
+    };
+
+    const handleOpenPostcode = () => {
+        open({ onComplete: handleAddressSelect });
+    };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files) {
-            console.log("Selected files:", files); // 파일 리스트를 확인
-            setImageFiles(Array.from(files)); // 선택된 파일들을 배열로 저장
-        } else {
-            console.error("No files selected");
+        if (e.target.files) {
+            setImageFiles(Array.from(e.target.files));
         }
     };
 
@@ -40,29 +47,23 @@ function OfflineStoreAddComponent() {
         }
 
         try {
-            // 1. 이미지 업로드
-            let uploadedImageUrls: string[] = [];
-            if (imageFiles.length > 0) {
-                uploadedImageUrls = await uploadS3Images(imageFiles); // 다중 이미지 업로드
-            } else {
-                alert("이미지를 업로드해주세요.");
-                return;
-            }
+            // 이미지 업로드
+            const uploadedImageUrls = await uploadS3Images(imageFiles);
 
-            // 2. 오프라인 매장 등록
-            const storeData: Partial<IOfflineStore> = {
+            // 오프라인 매장 등록
+            const storeData = {
                 storeName,
                 storeAddress,
-                latitude,
-                longitude,
-                storeImage: uploadedImageUrls[0], // 첫 번째 URL을 대표 이미지로 사용
+                storeAddressDetail,
+                storeZipcode,
+                storeImage: uploadedImageUrls[0],
             };
 
             const storeId = await registerOfflineStore(creatorId, storeData);
             alert(`오프라인 매장이 성공적으로 등록되었습니다. (ID: ${storeId})`);
-            navigate("/offlinestore"); // 등록 후 매장 리스트 페이지로 이동
-        } catch (error: any) {
-            console.error("Failed to register offline store:", error.message);
+            navigate("/offlinestore");
+        } catch (error) {
+            console.error("Failed to register offline store:", axios.isAxiosError(error);
             alert("오프라인 매장 등록에 실패했습니다.");
         }
     };
@@ -78,41 +79,40 @@ function OfflineStoreAddComponent() {
                         value={storeName}
                         onChange={(e) => setStoreName(e.target.value)}
                         className="w-full p-2 border rounded"
-                        placeholder="매장명을 입력하세요"
                         required
                     />
                 </div>
                 <div>
                     <label className="block text-gray-700 font-medium mb-2">매장 주소</label>
+                    <div className="flex space-x-2">
+                        <input
+                            type="text"
+                            value={storeZipcode}
+                            placeholder="우편번호"
+                            className="w-1/3 p-2 border rounded"
+                            readOnly
+                        />
+                        <button
+                            type="button"
+                            onClick={handleOpenPostcode}
+                            className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            주소 검색
+                        </button>
+                    </div>
                     <input
                         type="text"
                         value={storeAddress}
-                        onChange={(e) => setStoreAddress(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        placeholder="매장 주소를 입력하세요"
-                        required
+                        placeholder="주소"
+                        className="w-full mt-2 p-2 border rounded"
+                        readOnly
                     />
-                </div>
-                <div>
-                    <label className="block text-gray-700 font-medium mb-2">위도 (Latitude)</label>
                     <input
                         type="text"
-                        value={latitude}
-                        onChange={(e) => setLatitude(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        placeholder="위도를 입력하세요"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700 font-medium mb-2">경도 (Longitude)</label>
-                    <input
-                        type="text"
-                        value={longitude}
-                        onChange={(e) => setLongitude(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        placeholder="경도를 입력하세요"
-                        required
+                        value={storeAddressDetail}
+                        onChange={(e) => setStoreAddressDetail(e.target.value)}
+                        placeholder="상세 주소"
+                        className="w-full mt-2 p-2 border rounded"
                     />
                 </div>
                 <div>
@@ -122,7 +122,7 @@ function OfflineStoreAddComponent() {
                         onChange={handleImageChange}
                         className="w-full p-2 border rounded"
                         accept="image/*"
-                        multiple // 다중 파일 선택 가능
+                        multiple
                         required
                     />
                 </div>

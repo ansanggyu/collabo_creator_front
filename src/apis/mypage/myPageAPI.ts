@@ -5,7 +5,9 @@ const host = "http://localhost:8080/api/mypage";
 
 export const getMyPage = async (creatorId: string): Promise<ICreator> => {
     try {
-        const response = await jwtAxios.get(`${host}/${creatorId}`);
+        const response = await jwtAxios.get(`${host}`, {
+            params: { creatorId }, // Query parameters로 creatorId 전달
+        });
         return response.data;
     } catch (error: any) {
         console.error("Failed to fetch MyPage data:", error.message);
@@ -13,9 +15,12 @@ export const getMyPage = async (creatorId: string): Promise<ICreator> => {
     }
 };
 
-export const updateMyPage = async (creatorId: string, creatorData: ICreator): Promise<void> => {
+export const updateMyPage = async (creatorId: string, creatorData: Partial<ICreator>): Promise<void> => {
     try {
-        await jwtAxios.put(`${host}/${creatorId}`, creatorData);
+        await jwtAxios.put(`${host}/update`, creatorData, {
+            params: { creatorId }, // Query parameters로 creatorId 전달
+            headers: { "Content-Type": "application/json" }, // Content-Type 설정
+        });
     } catch (error: any) {
         console.error("Failed to update MyPage data:", error.message);
         throw new Error("마이페이지 수정에 실패했습니다.");

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getMyPage, updateMyPage } from "../../apis/mypage/myPageAPI";
 import { ICreator } from "../../types/icreator";
 import Cookies from "js-cookie";
+import {uploadImages} from "../../apis/image/imageUploadAPI.ts";
 
 function MyPageComponent() {
     const [creatorData, setCreatorData] = useState<ICreator | null>(null);
@@ -40,6 +41,21 @@ function MyPageComponent() {
         setCreatorData((prev) =>
             prev ? { ...prev, [name]: type === "checkbox" ? checked : value } : null
         );
+    };
+
+    // 이미지 업로드 핸들러
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ICreator) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        try {
+            const uploadedUrls = await uploadImages(Array.from(e.target.files));
+            if (uploadedUrls.length > 0) {
+                setCreatorData((prev) => prev ? { ...prev, [fieldName]: uploadedUrls[0] } : null);
+            }
+        } catch (error: any) {
+            console.error("Failed to upload image:", error.message);
+            alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
     // 데이터 저장
@@ -156,6 +172,44 @@ function MyPageComponent() {
                         />
                         <span className="ml-3 text-gray-700">SMS 알림 받기</span>
                     </label>
+                </div>
+            </div>
+
+            {/* 배경 이미지 */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">배경 이미지 관리</h2>
+                <div className="flex flex-col space-y-4">
+                    <label className="block">
+                        <span className="text-sm text-gray-700">배경 이미지 업로드</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, "backgroundImg")}
+                            className="mt-2 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                    </label>
+                    {creatorData.backgroundImg && (
+                        <img src={creatorData.backgroundImg} alt="Background" className="mt-4 w-full h-auto rounded-lg" />
+                    )}
+                </div>
+            </div>
+
+            {/* 로고 이미지 */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">로고 이미지 관리</h2>
+                <div className="flex flex-col space-y-4">
+                    <label className="block">
+                        <span className="text-sm text-gray-700">로고 이미지 업로드</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, "logoImg")}
+                            className="mt-2 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                    </label>
+                    {creatorData.logoImg && (
+                        <img src={creatorData.logoImg} alt="Logo" className="mt-4 w-24 h-24 rounded-full" />
+                    )}
                 </div>
             </div>
 
