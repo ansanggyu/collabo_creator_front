@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
 import {uploadImages} from "../../apis/image/imageUploadAPI.ts";
 import axios from "axios";
+import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
+import AddCategoryRedirect from "../category/AddCategoryRedirect.tsx";
 
 const initialState: IProductRequest = {
     productName: "",
@@ -197,6 +199,7 @@ function AddProductComponent() {
                         ))}
                     </select>
                 </div>
+                <AddCategoryRedirect/>
 
                 {/* 이미지 업로드 */}
                 <div>
