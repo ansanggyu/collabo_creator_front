@@ -13,6 +13,8 @@ import {
 } from "chart.js";
 import { getCreatorAnalytics } from "../../apis/analytics/analyticsAPI.ts";
 import { RootState } from "../../store.ts";
+import axios from "axios";
+import {ICreatorAnalytics} from "../../types/iproduct.ts";
 
 // Chart.js 필수 모듈 등록
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -67,13 +69,15 @@ function SalesGraphComponent() {
                 const data = await getCreatorAnalytics(creatorId, dateRange.start, dateRange.end);
                 console.log("API Response Data:", data);
 
-                const updatedLabels = data.map((item: any) => getKoreanMonthName(item.month));
-                const updatedSalesData = data.map((item: any) => item.totalSales);
+                const updatedLabels = data.map((item: ICreatorAnalytics) => getKoreanMonthName(item.month));
+                const updatedSalesData = data.map((item: ICreatorAnalytics) => item.totalSales);
 
                 setLabels(updatedLabels);
                 setSalesData(updatedSalesData);
             } catch (error) {
-                console.error("Failed to fetch Product Sales data:", error.message);
+                if(axios.isAxiosError(error)){
+                    console.error("Failed to fetch Product Sales data:", error.response?.data);}
+                throw new Error("Unable to retrieve getCreatorAnalytics. Please try again later.");
             }
         };
 

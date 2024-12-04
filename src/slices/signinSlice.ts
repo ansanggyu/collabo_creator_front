@@ -7,7 +7,8 @@ const initialState: ICreatorlogin = {
     creatorPassword: '',
     accessToken: '',
     refreshToken: '',
-    creatorName: ''
+    creatorName: '',
+    loading: false
 };
 
 // 로그인 API 호출
@@ -65,8 +66,9 @@ const signinSlice = createSlice({
             })
             .addCase(postSigninThunk.pending, (state) => {
                 console.log("postSigninThunk.pending");
+                state.loading = true;
             })
-            .addCase(postSigninThunk.rejected, (state, action) => {
+            .addCase(postSigninThunk.rejected, (_state, action) => {
                 console.error("postSigninThunk.rejected:", action.error.message);
             });
     }

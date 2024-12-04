@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { IProductStats, IUserCategory } from "../../types/iproduct.ts";
-import {getCategoriesByCreator} from "../../apis/product/productAPI.ts";
-import {getProductStats} from "../../apis/analytics/analyticsAPI.ts";
+import { getCategoriesByCreator } from "../../apis/product/productAPI.ts";
+import { getProductStats } from "../../apis/analytics/analyticsAPI.ts";
 
 function ProductStatsComponent() {
     const creatorId = useSelector((state: RootState) => state.signin.creatorId); // Redux에서 creatorId 가져오기
@@ -52,7 +52,9 @@ function ProductStatsComponent() {
                 const result = await getProductStats(
                     creatorId,
                     dateRange.start,
-                    dateRange.end
+                    dateRange.end,
+                    category > 0 ? category : undefined, // 카테고리 필터
+                    searchTerm.trim() || undefined // 검색어 필터
                 );
 
                 console.log("API Response:", result);
@@ -64,8 +66,7 @@ function ProductStatsComponent() {
         };
 
         fetchStats();
-    }, [creatorId, dateRange]);
-
+    }, [creatorId, dateRange, category, searchTerm]);
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setCategory(Number(e.target.value));
