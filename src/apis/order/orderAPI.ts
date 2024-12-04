@@ -30,3 +30,20 @@ export const getOrderDetail = async (
     });
     return res.data;
 };
+
+// 주문 상태 업데이트
+export const updateOrderStatus = async (
+    orderNo: number,
+    creatorId: string,
+    newStatus: string
+): Promise<void> => {
+    try {
+        const res = await jwtAxios.put(`${host}/${orderNo}/status`, null, { // body 제거
+            params: { creatorId, status: newStatus }, // status를 params로 전달
+        });
+        return res.data; // 성공적으로 처리되면 API의 응답을 반환
+    } catch (error: any) {
+        console.error("Failed to update order status:", error.message);
+        throw new Error("Unable to update order status. Please try again later.");
+    }
+};

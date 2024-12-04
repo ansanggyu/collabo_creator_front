@@ -53,6 +53,7 @@ function OfflineManagementComponent() {
     }, [creatorId]);
 
     const goToEdit = (storeNo: number) => {
+        console.log("Navigating to edit page with storeNo:", storeNo); // 디버깅용
         navigate(`/offlinestore/edit/${storeNo}`, { state: { creatorId } });
     };
 
