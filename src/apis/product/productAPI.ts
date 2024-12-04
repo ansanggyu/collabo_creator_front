@@ -1,5 +1,5 @@
 import {IPageResponse} from "../../types/ipageresponse.ts";
-import {IProduct, IProductRequest, IUserCategory} from "../../types/iproduct.ts";
+import {IProduct, IProductRequest} from "../../types/iproduct.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
 const host = 'http://localhost:8080/api/product';
@@ -16,19 +16,6 @@ export const addProduct = async (productData: IProductRequest): Promise<void> =>
 
     if (result.status !== 200) {
         throw new Error("Failed to add product");
-    }
-};
-
-export const getCategoriesByCreator = async (creatorId: string): Promise<IUserCategory[]> => {
-    try {
-        const result = await jwtAxios.get(`${host}/usercategory`, {
-            params: { creatorId },
-        });
-        console.log("successed in getting category with", creatorId)
-        return result.data;
-    } catch (error: any) {
-        console.error("Failed to fetch categories by creator:", error.message);
-        throw new Error("Unable to retrieve categories. Please try again later.");
     }
 };
 

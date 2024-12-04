@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { IProductStats, IUserCategory } from "../../types/iproduct.ts";
-import { getCategoriesByCreator } from "../../apis/product/productAPI.ts";
 import { getProductStats } from "../../apis/analytics/analyticsAPI.ts";
+import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
 
 function ProductStatsComponent() {
     const creatorId = useSelector((state: RootState) => state.signin.creatorId); // Redux에서 creatorId 가져오기

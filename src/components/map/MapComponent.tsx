@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import {KakaoMaps} from "../../types/ikakaomap.ts";
 
 interface MapComponentProps {
     latitude: string;
@@ -10,32 +11,41 @@ const MapComponent = ({ latitude, longitude }: MapComponentProps) => {
 
     useEffect(() => {
         const loadKakaoMap = () => {
-            if (window.kakao && mapContainer.current) {
-                const map = new window.kakao.maps.Map(mapContainer.current, {
-                    center: new window.kakao.maps.LatLng(parseFloat(latitude), parseFloat(longitude)),
-                    level: 3,
-                });
-
-                const marker = new window.kakao.maps.Marker({
-                    position: new window.kakao.maps.LatLng(parseFloat(latitude), parseFloat(longitude)),
-                });
-
-                marker.setMap(map);
+            if (!window.kakao || !window.kakao.maps) {
+                console.error("Kakao Maps API is not available.");
+                return;
             }
+
+            window.kakao.maps.load(() => {
+                if (mapContainer.current) {
+                    const kakao = window.kakao;
+                    const center = new kakao.maps.LatLng(
+                        parseFloat(latitude),
+                        parseFloat(longitude)
+                    );
+                    const map = new kakao.maps.Map(mapContainer.current, {
+                        center,
+                        level: 3,
+                    });
+                    const marker = new kakao.maps.Marker({ position: center });
+                    marker.setMap(map);
+                }
+            });
         };
 
-        if (window.kakao && window.kakao.maps) {
-            loadKakaoMap();
+        const addScript = () => {
+            const script = document.createElement("script");
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_API_KEY}&autoload=false&libraries=services`;
+            script.async = true;
+            script.onload = loadKakaoMap;
+            script.onerror = () => console.error("Failed to load Kakao Maps script.");
+            document.head.appendChild(script);
+        };
+
+        if (!window.kakao || !window.kakao.maps) {
+            addScript();
         } else {
-            const script = document.querySelector(
-                "script[src*='https://dapi.kakao.com/v2/maps/sdk.js']"
-            );
-
-            script?.addEventListener("load", loadKakaoMap);
-
-            return () => {
-                script?.removeEventListener("load", loadKakaoMap);
-            };
+            loadKakaoMap();
         }
     }, [latitude, longitude]);
 
@@ -46,6 +56,6 @@ export default MapComponent;
 
 declare global {
     interface Window {
-        kakao: any;
+        kakao: KakaoMaps;
     }
 }
