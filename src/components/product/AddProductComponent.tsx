@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { addProduct, getCategoriesByCreator } from "../../apis/product/productAPI.ts";
+import { addProduct } from "../../apis/product/productAPI.ts";
 import { IProductRequest, IUserCategory } from "../../types/iproduct";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store.ts";
+import AddCategoryRedirect from "../category/AddCategoryRedirect.tsx";
+import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
 
 const initialState: IProductRequest = {
     productName: "",
@@ -174,6 +176,7 @@ function AddProductComponent() {
                         ))}
                     </select>
                 </div>
+                <AddCategoryRedirect/>
 
                 {/* 이미지 업로드 */}
                 <div>

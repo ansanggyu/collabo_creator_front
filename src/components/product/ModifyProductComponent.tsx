@@ -2,9 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { IProduct, IUserCategory } from "../../types/iproduct.ts";
 import { useEffect, useState } from "react";
 import LoadingPage from "../../pages/LoadingPage.tsx";
-import { getProductOne, updateProduct, getCategoriesByCreator } from "../../apis/product/productAPI.ts";
+import { getProductOne, updateProduct } from "../../apis/product/productAPI.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
+import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
 
 const initialState: IProduct = {
     categoryNo: 0,

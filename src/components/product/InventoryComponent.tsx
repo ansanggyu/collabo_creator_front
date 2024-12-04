@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import { IProduct, IUserCategory } from "../../types/iproduct";
-import { getProductList, getCategoriesByCreator } from "../../apis/product/productAPI";
+import { getProductList } from "../../apis/product/productAPI";
 import { IPageResponse } from "../../types/ipageresponse";
 import PageComponent from "../common/PageComponent.tsx";
 import LoadingPage from "../../pages/LoadingPage.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
+import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
 
 const productStatusMapping: Record<string, number | null> = {
     "전체": null,
