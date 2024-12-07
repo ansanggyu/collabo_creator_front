@@ -5,6 +5,7 @@ on:
     branches:
       - master  # master 브랜치에 푸시될 때 실행
 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
