@@ -24,8 +24,8 @@ function MyPageComponent() {
             try {
                 const data = await getMyPage(creatorId);
                 setCreatorData(data);
-            } catch (error: any) {
-                console.error("Failed to fetch MyPage data:", error.message);
+            } catch (error) {
+                console.error("Failed to fetch MyPage data:", error);
                 alert("마이페이지 데이터를 불러오는 데 실패했습니다.");
             } finally {
                 setLoading(false);
@@ -52,8 +52,8 @@ function MyPageComponent() {
             if (uploadedUrls.length > 0) {
                 setCreatorData((prev) => prev ? { ...prev, [fieldName]: uploadedUrls[0] } : null);
             }
-        } catch (error: any) {
-            console.error("Failed to upload image:", error.message);
+        } catch (error) {
+            console.error("Failed to upload image:", error);
             alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
         }
     };
@@ -65,8 +65,8 @@ function MyPageComponent() {
         try {
             await updateMyPage(creatorId, creatorData);
             alert("모든 정보가 성공적으로 저장되었습니다.");
-        } catch (error: any) {
-            console.error("Failed to update MyPage data:", error.message);
+        } catch (error) {
+            console.error("Failed to update MyPage data:", error);
             alert("마이페이지 수정에 실패했습니다.");
         }
     };

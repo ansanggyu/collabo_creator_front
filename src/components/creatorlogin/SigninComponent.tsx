@@ -57,9 +57,9 @@ function SigninComponent() {
 
             // 로그인 성공 후, 메인 페이지로 리디렉션
             navigate("/main");
-        } catch (exception: any) {
+        } catch (exception) {
             // 로그인 실패 시 error 처리
-            console.error("로그인 실패:", exception.response?.data?.message || exception.message);
+            console.error("로그인 실패:", exception);
         }
     };
 

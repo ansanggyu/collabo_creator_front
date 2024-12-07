@@ -66,8 +66,8 @@ const DashboardComponent = () => {
 
                 // 꺾은선 그래프 데이터
                 const analyticsData = await getCreatorAnalytics(creatorId, "2023-01-01", "2024-12-31");
-                setLabels(analyticsData.map((item: any) => `${item.month}월`));
-                setSalesData(analyticsData.map((item: any) => item.totalSales));
+                setLabels(analyticsData.map((item) => `${item.month}월`));
+                setSalesData(analyticsData.map((item) => item.totalSales));
 
                 // 환불/취소 통계 데이터
                 const refundData = await getRefundStats(creatorId, "2023-01-01", "2024-12-31");

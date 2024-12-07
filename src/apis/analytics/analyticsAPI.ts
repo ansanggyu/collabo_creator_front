@@ -1,7 +1,5 @@
 import {ICreatorAnalytics, IProductStats, IRefundNCancel} from "../../types/iproduct.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
-import axios from "axios";
-
 
 const host = "http://localhost:8080/api";
 
@@ -11,7 +9,7 @@ export const getCreatorAnalytics = async (
     endDate: string
 ): Promise<ICreatorAnalytics[]> => {
     try {
-        const result = await jwtAxios.get(`${host}/statistics`, {
+        const result = await jwtAxios.get<ICreatorAnalytics[]>(`${host}/statistics`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -20,10 +18,11 @@ export const getCreatorAnalytics = async (
         });
         console.log("Successfully fetched analytics for", creatorId);
         console.log(result.data)
+
         return result.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error(error.response?.data);
+        if (error) {
+            console.error(error);
         }
         throw new Error("Unable to retrieve analytics. Please try again later.");
     }
@@ -37,7 +36,7 @@ export const getProductStats = async (
     searchTerm?: string // 검색어 필터 추가
 ): Promise<IProductStats[]> => {
     try {
-        const result = await jwtAxios.get(`${host}/statistics/product`, {
+        const result = await jwtAxios.get<IProductStats[]>(`${host}/statistics/product`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -50,8 +49,8 @@ export const getProductStats = async (
         console.log(result.data);
         return result.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error(error.response?.data);
+        if (error) {
+            console.error(error);
         }
         throw new Error("Unable to retrieve product statistics. Please try again later.");
     }
@@ -63,7 +62,7 @@ export const getRefundStats = async (
     endDate: string
 ): Promise<IRefundNCancel[]> => {
     try {
-        const result = await jwtAxios.get(`${host}/refundncancel`, {
+        const result = await jwtAxios.get<IRefundNCancel[]>(`${host}/refundncancel`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -74,8 +73,8 @@ export const getRefundStats = async (
         console.log(result.data);
         return result.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error(error.response?.data);
+        if (error) {
+            console.error(error);
         }
         throw new Error("Unable to retrieve refund and cancel statistics. Please try again later.");
     }
