@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import { updateOfflineStore, getOfflineStoreList, deleteOfflineStore } from "../../apis/offlinestore/offlineStoreAPI";
-import { uploadImages } from "../../apis/image/imageUploadAPI.ts";
+import { uploadS3Images } from "../../apis/image/imageUploadAPI.ts";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 
 function OfflineStoreEditComponent() {
@@ -87,7 +87,7 @@ function OfflineStoreEditComponent() {
             let uploadedImageUrl = storeImage;
             if (imageFiles.length > 0) {
                 // 이미지 업로드
-                const uploadedImages = await uploadImages(imageFiles);
+                const uploadedImages = await uploadS3Images(imageFiles);
                 uploadedImageUrl = uploadedImages[0]; // 새로 업로드된 이미지로 교체
             }
 

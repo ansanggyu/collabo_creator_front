@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getMyPage, updateMyPage } from "../../apis/mypage/myPageAPI";
 import { ICreator } from "../../types/icreator";
 import Cookies from "js-cookie";
-import {uploadImages} from "../../apis/image/imageUploadAPI.ts";
+import {uploadS3Images} from "../../apis/image/imageUploadAPI.ts";
 
 function MyPageComponent() {
     const [creatorData, setCreatorData] = useState<ICreator | null>(null);
@@ -48,7 +48,7 @@ function MyPageComponent() {
         if (!e.target.files || e.target.files.length === 0) return;
 
         try {
-            const uploadedUrls = await uploadImages(Array.from(e.target.files));
+            const uploadedUrls = await uploadS3Images(Array.from(e.target.files));
             if (uploadedUrls.length > 0) {
                 setCreatorData((prev) => prev ? { ...prev, [fieldName]: uploadedUrls[0] } : null);
             }
