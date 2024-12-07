@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import Depth1Menu from "./Depth1Menu";
-import logo from "../../assets/img/logo.png";
 
 interface SubMenuProps {
     name: string;
@@ -24,15 +23,13 @@ function AsideMenuComponent() {
                 { name: "재고 관리", toPath: "/inventory" },
             ],
             basicPath: "/product",
-            iconName: "product.png",
+            iconName: "/img/icons/product.png",
         },
         {
             mainName: "주문 관리",
-            subMenus: [
-                { name: "주문 내역", toPath: "/list" }
-            ],
+            subMenus: [{ name: "주문 내역", toPath: "/list" }],
             basicPath: "/order",
-            iconName: "order.png",
+            iconName: "/img/icons/order.png",
         },
         {
             mainName: "리뷰 및 QnA 관리",
@@ -41,7 +38,7 @@ function AsideMenuComponent() {
                 { name: "QnA 목록", toPath: "qna/list" },
             ],
             basicPath: "/",
-            iconName: "review.png",
+            iconName: "/img/icons/review.png",
         },
         {
             mainName: "매출 및 통계",
@@ -51,21 +48,19 @@ function AsideMenuComponent() {
                 { name: "환불/취소율 통계", toPath: "/refunds" },
             ],
             basicPath: "/analytics",
-            iconName: "analytics.png",
+            iconName: "/img/icons/analytics.png",
         },
         {
             mainName: "오프라인 매장 관리",
             subMenus: [{ name: "매장 소개", toPath: "/" }],
             basicPath: "/offlinestore",
-            iconName: "offline.png",
+            iconName: "/img/icons/offline.png",
         },
         {
             mainName: "설정",
-            subMenus: [
-                { name: "My Page", toPath: "/mypage" },
-            ],
+            subMenus: [{ name: "My Page", toPath: "/mypage" }],
             basicPath: "/settings",
-            iconName: "settings.png",
+            iconName: "/img/icons/settings.png",
         },
     ];
 
@@ -74,7 +69,7 @@ function AsideMenuComponent() {
             <div className="py-4 text-neutral-800">
                 {/* 로고 및 대시보드 메뉴 */}
                 <Link to="/main" className="flex items-center justify-center mb-4 p-2">
-                    <img src={logo} alt="Logo" className="px-16" />
+                    <img src="/img/logo.png" alt="Logo" className="px-16" />
                 </Link>
                 {/* Depth1 메뉴 */}
                 <ul className="mt-4 space-y-2 text-txt-grey">

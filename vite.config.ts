@@ -11,9 +11,4 @@ export default defineConfig({
     port: 5173,
     host: true,
   },
-  resolve: {
-    alias: {
-      '/img': '/src/assets/img', // '/img' 경로를 '/src/assets/img'로 매핑
-    },
-  },
 });
