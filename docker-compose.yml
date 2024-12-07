@@ -5,7 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "80:80"   # 기존 설정 유지
+      - "5173:5173" # Vite 개발 서버 포트 매핑
     restart: always
     env_file:
       - .env
