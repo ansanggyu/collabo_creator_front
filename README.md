@@ -1,50 +1,40 @@
-# React + TypeScript + Vite
+# 🛍️ Collabo Creator Front
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Collabo Creator Front**는 크리에이터들이 제품을 등록하고 관리하며, 고객과 소통할 수 있는 쇼핑몰 플랫폼의 프론트엔드 애플리케이션입니다.  
+React와 Vite를 기반으로 빠르고 효율적인 개발 환경을 제공합니다.
 
-Currently, two official plugins are available:
+## 🌟 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **제품 관리**
+  - 제품 등록, 수정, 삭제
+  - 제품 리스트와 상세 보기
+- **카테고리 관리**
+  - 카테고리 추가 및 관리
+- **고객 주문 관리**
+  - 주문 상세 내역 보기 및 상태 관리
+- **리뷰 및 Q&A 관리**
+  - 고객 리뷰 및 문의 확인
+- **이미지 업로드**
+  - S3를 활용한 이미지 업로드 및 관리
+- **JWT 인증**
+  - JWT를 활용한 사용자 인증 및 토큰 갱신
 
-## Expanding the ESLint configuration
+## 🚀 기술 스택
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Frontend Framework**: React, TypeScript
+- **Build Tool**: Vite
+- **CSS**: Tailwind CSS
+- **API 통신**: Axios + JWT Axios
+- **상태 관리**: Redux Toolkit
+- **이미지 스토리지**: AWS S3
+- **라우팅 및 로드 밸런싱**: AWS Application Load Balancer (ALB)
+- **배포**: Docker, AWS EC2, Route 53
+- **CI/CD**: GitHub Actions
 
-- Configure the top-level `parserOptions` property like this:
+## 📦 설치 및 실행
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### 1. 클론하기
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+```bash
+git clone https://github.com/your-repository/collabo_creator_front.git
+cd collabo_creator_front
