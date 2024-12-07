@@ -11,4 +11,5 @@ export default defineConfig({
     port: 5173, // Vite 개발 서버 포트
     host: true, // 외부 IP 접속 허용
   },
+  publicDir: 'src/assets', // src/assets를 정적 파일로 처리
 });
