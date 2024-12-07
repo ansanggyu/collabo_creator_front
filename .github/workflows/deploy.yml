@@ -24,7 +24,7 @@ jobs:
       # 3. EC2에 접속하여 배포 작업 수행
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@<EC2_PUBLIC_IP> <<EOF
+          ssh -o StrictHostKeyChecking=no ec2-user@<EC2_PUBLIC_IP> << 'EOF'
             cd /path/to/your/project
             git pull origin master
             docker-compose down
