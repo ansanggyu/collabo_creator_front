@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: EC2_SSH_KEY  # GitHub Environment 지정
 
     steps:
       # 1. GitHub 리포지토리 체크아웃
