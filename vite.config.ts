@@ -8,8 +8,12 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    port: 5173, // Vite 개발 서버 포트
-    host: true, // 외부 IP 접속 허용
+    port: 5173,
+    host: true,
   },
-  publicDir: 'src/assets', // src/assets를 정적 파일로 처리
+  resolve: {
+    alias: {
+      '/img': '/src/assets/img', // '/img' 경로를 '/src/assets/img'로 매핑
+    },
+  },
 });
