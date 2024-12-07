@@ -182,9 +182,9 @@ function ProductListComponent() {
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
                         >
                             <div className="h-48 bg-gray-200 flex items-center justify-center">
-                                {product.productImageUrl.length > 0 ? (
+                                {product.productImages.length > 0 ? (
                                     <img
-                                        src={product.productImageUrl[0]}
+                                        src={product.productImages[0].productImageUrl}
                                         alt={product.productName}
                                         className="w-full h-full object-cover"
                                     />
@@ -230,7 +230,7 @@ function ProductListComponent() {
             </div>
 
             {/* 페이지네이션 */}
-            {pageResponse && <PageComponent<IProduct> pageResponse={pageResponse} />}
+            {pageResponse && <PageComponent<IProduct> pageResponse={pageResponse}/>}
         </div>
     );
 }
