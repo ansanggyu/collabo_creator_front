@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IProduct, IUserCategory } from "../../types/iproduct.ts";
-import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
+import { getCategoriesByCreator } from "../../apis/category/categoryAPI.ts";
 
 const productStatusMapping: Record<string, number | null> = {
     "전체": null,
@@ -21,7 +21,18 @@ function ProductListComponent() {
 
     const creatorId = useSelector((state: RootState) => state.signin.creatorId);
 
-    const [pageResponse, setPageResponse] = useState<IPageResponse<IProduct> | null>(null);
+    const [pageResponse, setPageResponse] = useState<IPageResponse<IProduct>>({
+        dtoList: [],
+        pageNumList: [],
+        pageRequestDTO: { page: 1, size: 10 },
+        prev: false,
+        next: false,
+        totalCount: 0,
+        prevPage: 0,
+        nextPage: 0,
+        current: 1,
+        totalPage: 1,
+    });
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [selectedStatus, setSelectedStatus] = useState<string>("전체");
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -32,10 +43,10 @@ function ProductListComponent() {
 
     // 상단 통계 데이터 계산
     const statistics = {
-        totalProducts: pageResponse?.totalCount || 0,
-        activeProducts: pageResponse?.dtoList.filter((p) => p.productStatus === "판매중").length || 0,
-        inactiveProducts: pageResponse?.dtoList.filter((p) => p.productStatus === "판매중지").length || 0,
-        outOfStock: pageResponse?.dtoList.filter((p) => p.productStatus === "품절").length || 0,
+        totalProducts: pageResponse.totalCount || 0,
+        activeProducts: pageResponse.dtoList.filter((p) => p.productStatus === "판매중").length,
+        inactiveProducts: pageResponse.dtoList.filter((p) => p.productStatus === "판매중지").length,
+        outOfStock: pageResponse.dtoList.filter((p) => p.productStatus === "품절").length,
     };
 
     // 카테고리 데이터 가져오기
@@ -72,7 +83,7 @@ function ProductListComponent() {
                     productStatusMapping[selectedStatus]?.toString() || undefined,
                     selectedCategory ?? undefined
                 );
-                setPageResponse({ ...response });
+                setPageResponse(response);
             } catch (error) {
                 console.error("상품 데이터 불러오기 실패:", error);
             } finally {
@@ -173,7 +184,7 @@ function ProductListComponent() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
                     <p className="col-span-3 text-center text-gray-500">로딩 중...</p>
-                ) : !pageResponse?.dtoList.length ? (
+                ) : pageResponse.dtoList.length === 0 ? (
                     <p className="col-span-3 text-center text-gray-500">상품이 없습니다.</p>
                 ) : (
                     pageResponse.dtoList.map((product) => (
@@ -182,7 +193,7 @@ function ProductListComponent() {
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
                         >
                             <div className="h-48 bg-gray-200 flex items-center justify-center">
-                                {product.productImages.length > 0 ? (
+                                {product.productImages?.length > 0 ? (
                                     <img
                                         src={product.productImages[0].productImageUrl}
                                         alt={product.productName}
@@ -230,7 +241,7 @@ function ProductListComponent() {
             </div>
 
             {/* 페이지네이션 */}
-            {pageResponse && <PageComponent<IProduct> pageResponse={pageResponse}/>}
+            {pageResponse && <PageComponent<IProduct> pageResponse={pageResponse} />}
         </div>
     );
 }
