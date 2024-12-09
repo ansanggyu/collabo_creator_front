@@ -6,7 +6,7 @@ function OrderDetailPage() {
 
     return (
         <div className="container mx-auto">
-            <OrderDetailComponent orderId={id || ""} />
+            <OrderDetailComponent orderId={id || ""} onClose={() => {}} />
         </div>
     );
 }

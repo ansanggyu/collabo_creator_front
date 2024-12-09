@@ -1,5 +1,4 @@
 import jwtAxios from "../../util/jwtUtil.ts";
-import axios from "axios";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IProduct, IProductRequest } from "../../types/iproduct.ts";
 
@@ -10,7 +9,7 @@ export const productImageUpload = async (
     imageDTOs: { productImageUrl: string; productImageOrd: number }[]
 ): Promise<{ productImageUrl: string; productImageOrd: number }[]> => {
     try {
-        const result = await jwtAxios.post(`${host}/img`, imageDTOs, {
+        const result = await jwtAxios.post<{ productImageUrl: string; productImageOrd: number }[]>(`${host}/img`, imageDTOs, {
             params: { productNo },
             headers: {
                 "Content-Type": "application/json",
@@ -23,9 +22,8 @@ export const productImageUpload = async (
 
         return result.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios Error:", error.message);
-            console.error("Axios Response:", error.response?.data);
+        if (error) {
+            console.error("Axios Error:", error);
         } else {
             console.error("Unexpected Error:", error);
         }
@@ -47,11 +45,8 @@ export const productImageDelete = async (imageId: number): Promise<void> => {
 
         console.log(`Image with ID ${imageId} successfully deleted.`);
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios Error:", error.message);
-            console.error("Axios Response:", error.response?.data);
-        } else {
-            console.error("Unexpected Error:", error);
+        if (error) {
+            console.error("Axios Error:", error);
         }
         throw new Error("An error occurred while deleting the product image.");
     }
@@ -71,11 +66,8 @@ export const addProduct = async (productData: IProductRequest): Promise<void> =>
             throw new Error("Failed to add product");
         }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios Error:", error.message);
-            console.error("Axios Response:", error.response?.data);
-        } else {
-            console.error("Unexpected Error:", error);
+        if (error) {
+            console.error("Axios Error:", error);
         }
         throw new Error("An error occurred while adding the product.");
     }
@@ -90,7 +82,7 @@ export const getProductList = async (
     selectedStatus?: string,
     selectedCategory?: number
 ): Promise<IPageResponse<IProduct>> => {
-    const params: any = {
+    const params: Record<string, unknown> = {
         page: page || 1,
         size: size || 10,
         creatorId,
@@ -100,15 +92,16 @@ export const getProductList = async (
     if (selectedStatus && selectedStatus !== "전체") params.status = selectedStatus;
     if (selectedCategory !== null && selectedCategory !== undefined) params.categoryNo = selectedCategory;
 
-    const res = await jwtAxios.get(`${host}/list`, { params });
+    const res = await jwtAxios.get<IPageResponse<IProduct>>(`${host}/list`, { params });
 
     return res.data;
 };
 
+
 // 특정 상품 가져오기
 export const getProductOne = async (productNo: number): Promise<IProduct | null> => {
     try {
-        const response = await jwtAxios.get(`${host}/read/${productNo}`);
+        const response = await jwtAxios.get<IProduct>(`${host}/read/${productNo}`);
         const data = response.data;
 
         // 다중 이미지 처리를 위해 이미지 데이터를 변환
@@ -126,6 +119,7 @@ export const getProductOne = async (productNo: number): Promise<IProduct | null>
         return null; // 실패한 경우 null 반환
     }
 };
+
 
 // 상품 업데이트
 export const updateProduct = async (creatorId: string, product: IProductRequest): Promise<void> => {
@@ -148,12 +142,9 @@ export const updateProduct = async (creatorId: string, product: IProductRequest)
             throw new Error("Failed to update product");
         }
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios Error:", error.message);
-            console.error("Axios Response:", error.response?.data);
-        } else {
-            console.error("Unexpected Error:", error);
-        }
+        if (error) {
+            console.error("Axios Error:", error);
         throw new Error("An error occurred while updating the product.");
+        }
     }
-};
+}

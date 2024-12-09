@@ -12,7 +12,7 @@ export const getReviewList = async (
     const pageValue: number = page || 1;
     const sizeValue: number = size || 10;
 
-    const res = await jwtAxios.get(`${host}/list`, {
+    const res = await jwtAxios.get<IPageResponse<IReview>>(`${host}/list`, {
         params: { page: pageValue, size: sizeValue, creatorId },
     });
 

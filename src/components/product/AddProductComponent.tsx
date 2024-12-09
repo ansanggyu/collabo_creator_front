@@ -4,7 +4,6 @@ import { IProductRequest, IUserCategory } from "../../types/iproduct";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
 import {uploadS3Images} from "../../apis/image/imageUploadAPI.ts";
-import axios from "axios";
 import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
 import AddCategoryRedirect from "../category/AddCategoryRedirect.tsx";
 
@@ -112,9 +111,9 @@ function AddProductComponent() {
             alert("상품이 성공적으로 등록되었습니다!");
             resetForm();
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error("Axios Error Response:", error.response?.data);
-                console.error("Axios Error Status:", error.response?.status);
+            if (error) {
+                console.error("Axios Error Response:", error);
+                console.error("Axios Error Status:", error);
             } else {
                 console.error("Non-Axios Error:", error);
             }

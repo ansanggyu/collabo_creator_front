@@ -13,7 +13,6 @@ import {
 } from "chart.js";
 import { getCreatorAnalytics } from "../../apis/analytics/analyticsAPI.ts";
 import { RootState } from "../../store.ts";
-import axios from "axios";
 import {ICreatorAnalytics} from "../../types/iproduct.ts";
 
 // Chart.js 필수 모듈 등록
@@ -75,8 +74,8 @@ function SalesGraphComponent() {
                 setLabels(updatedLabels);
                 setSalesData(updatedSalesData);
             } catch (error) {
-                if(axios.isAxiosError(error)){
-                    console.error("Failed to fetch Product Sales data:", error.response?.data);}
+                if(error){
+                    console.error("Failed to fetch Product Sales data:", error);}
                 throw new Error("Unable to retrieve getCreatorAnalytics. Please try again later.");
             }
         };
