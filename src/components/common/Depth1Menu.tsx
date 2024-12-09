@@ -30,7 +30,7 @@ function Depth1Menu({ mainName, subMenus, basicPath, iconName }: Depth1MenuProps
 
     const isToggleOpen = () => setIsToggle(!isToggle);
 
-    const iconPath = `/src/assets/img/icons/${iconName}`;
+    const iconPath = `${iconName}`;
 
     return (
         <li className="relative px-6 py-3">
