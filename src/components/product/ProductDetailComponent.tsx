@@ -7,19 +7,18 @@ import { getReviewList } from "../../apis/review/reviewAPI.ts";
 import { IReview } from "../../types/ireview.ts";
 
 const initialState: IProduct = {
-    categoryNo: 0,
-    createdAt: "",
-    creatorName: "",
-    productImageOrd: 0,
     productNo: 0,
     productName: "",
-    productDescription: "",
     productPrice: 0,
     stock: 0,
-    productStatus: "",
-    categoryName: "",
     rating: 0,
-    productImageUrl: "",
+    productDescription: "",
+    productStatus: "",
+    createdAt: "",
+    categoryNo: 0,
+    categoryName: "",
+    creatorName: "",
+    productImages: [], // 추가된 속성
 };
 
 function ProductDetailComponent() {
@@ -27,7 +26,8 @@ function ProductDetailComponent() {
     const [product, setProduct] = useState(initialState);
     const [loading, setLoading] = useState(false);
     const [reviews, setReviews] = useState<IReview[]>([]);
-    const [reviewLoading, setReviewLoading] = useState(false); // 리뷰 로딩 상태 추가
+    const [reviewLoading, setReviewLoading] = useState(false);
+    const [mainImage, setMainImage] = useState(""); // 메인 이미지 URL
 
     const navigate = useNavigate();
 
@@ -42,7 +42,16 @@ function ProductDetailComponent() {
             const pno = Number(productNo);
             try {
                 const result = await getProductOne(pno);
-                setProduct(result);
+                if (result) {
+                    setProduct(result);
+
+                    // 이미지 처리
+                    const sortedImages = result.productImages.sort(
+                        (a, b) => a.productImageOrd - b.productImageOrd
+                    );
+                    setMainImage(sortedImages[0]?.productImageUrl || ""); // 첫 번째 이미지를 메인으로 설정
+                    setProduct((prev) => ({ ...prev, productImages: sortedImages }));
+                }
             } catch (error) {
                 console.error("Failed to fetch product details:", error);
             } finally {
@@ -56,19 +65,16 @@ function ProductDetailComponent() {
     // 리뷰 데이터 가져오기
     useEffect(() => {
         const fetchReviews = async () => {
-            if (!product.creatorName) {
-                console.warn("Creator name is missing, cannot fetch reviews.");
-                return;
-            }
-            setReviewLoading(true); // 로딩 상태 설정
+            if (!product.creatorName) return;
+
+            setReviewLoading(true);
             try {
                 const reviewData = await getReviewList(1, 10, product.creatorName);
-                console.log("Fetched reviews:", reviewData);
-                setReviews(reviewData.dtoList || []); // 리뷰 데이터 설정
+                setReviews(reviewData.dtoList || []);
             } catch (error) {
                 console.error("Failed to fetch reviews:", error);
             } finally {
-                setReviewLoading(false); // 로딩 상태 해제
+                setReviewLoading(false);
             }
         };
 
@@ -98,11 +104,27 @@ function ProductDetailComponent() {
                         상품 이미지
                     </div>
                     <img
-                        src={product.productImageUrl}
+                        src={mainImage} // 메인 이미지 URL
                         alt="주요 상품 이미지"
-                        className="w-full h-60 object-cover"
+                        className="w-full h-60 object-contain" // object-contain으로 수정
                     />
+
+                    {/* 작은 썸네일 */}
+                    <div className="flex justify-center space-x-2 mt-2">
+                        {product.productImages.map((image, index) => (
+                            <img
+                                key={index}
+                                src={image.productImageUrl}
+                                alt={`썸네일 ${index + 1}`}
+                                className={`w-16 h-16 object-contain border rounded cursor-pointer ${
+                                    mainImage === image.productImageUrl ? "border-blue-500" : "border-gray-300"
+                                }`} // 썸네일도 object-contain으로 수정
+                                onMouseEnter={() => setMainImage(image.productImageUrl)} // 마우스 올리면 메인 이미지 변경
+                            />
+                        ))}
+                    </div>
                 </div>
+
 
                 {/* 상품 정보 */}
                 <div className="grid grid-cols-1 gap-4">
@@ -201,7 +223,6 @@ function ProductDetailComponent() {
                     <p className="text-gray-500">아직 작성된 리뷰가 없습니다.</p>
                 )}
             </div>
-
 
             {/* 수정하기 버튼 */}
             <div className="text-right mt-4">

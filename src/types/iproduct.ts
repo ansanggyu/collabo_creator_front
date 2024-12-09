@@ -14,20 +14,25 @@ export interface IProduct{
 
     creatorName : string,
 
-    productImageOrd : number,
-    productImageUrl : string
+    productImages: IProductImage[];
 
 }
 
 export interface IProductRequest {
+    productNo?: number;
     productName: string;
+    productDescription: string;
     productPrice: number;
     stock: number;
-    productDescription: string;
     productStatus: number;
     categoryNo: number;
     creatorId: string;
-    productImages: string[];
+    productImages: IProductImage[]; // 이미지 배열
+}
+
+export interface IProductImage {
+    productImageUrl: string;
+    productImageOrd: number; // 이미지 순서
 }
 
 export interface IUserCategory {
@@ -53,25 +58,4 @@ export interface IRefundNCancel {
     status: string; // 환불, 취소, 발송 처리
     count: number;  // 해당 상태의 건수
     percentage: number; // 해당 상태의 백분율
-}
-
-export interface IInventoryProduct {
-    id: number; // 상품 ID
-    name: string; // 상품명
-    price: number; // 가격
-    stock: number; // 재고
-    thumbnail: string; // 썸네일 URL
-    date: string; // 등록일 (YYYY-MM-DD 형식)
-}
-
-// 날짜 범위 타입
-export interface IDateRange {
-    start: string;
-    end: string;
-}
-
-// 정렬 설정 타입
-export interface ISortConfig {
-    key: "price" | "stock" | "date" | ""; // 정렬할 키
-    direction: "asc" | "desc"; // 정렬 방향
 }

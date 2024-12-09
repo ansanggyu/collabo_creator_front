@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import { updateOfflineStore, getOfflineStoreList, deleteOfflineStore } from "../../apis/offlinestore/offlineStoreAPI";
-import { uploadImages } from "../../apis/image/imageUploadAPI.ts";
+import { uploadS3Images } from "../../apis/image/imageUploadAPI.ts";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 
 function OfflineStoreEditComponent() {
@@ -48,8 +48,8 @@ function OfflineStoreEditComponent() {
                     alert("해당 매장을 찾을 수 없습니다.");
                     navigate("/offlinestore");
                 }
-            } catch (error: any) {
-                console.error("Error fetching store data:", error.message);
+            } catch (error) {
+                console.error("Error fetching store data:", error);
                 alert("매장 정보를 불러오는 데 실패했습니다.");
                 navigate("/offlinestore");
             } finally {
@@ -60,7 +60,7 @@ function OfflineStoreEditComponent() {
         fetchStoreData();
     }, [storeNo, navigate]);
 
-    const handleAddressSelect = (data: any) => {
+    const handleAddressSelect = (data :any) => {
         setStoreAddress(data.address);
         setStoreZipcode(data.zonecode);
     };
@@ -87,7 +87,7 @@ function OfflineStoreEditComponent() {
             let uploadedImageUrl = storeImage;
             if (imageFiles.length > 0) {
                 // 이미지 업로드
-                const uploadedImages = await uploadImages(imageFiles);
+                const uploadedImages = await uploadS3Images(imageFiles);
                 uploadedImageUrl = uploadedImages[0]; // 새로 업로드된 이미지로 교체
             }
 
@@ -102,8 +102,8 @@ function OfflineStoreEditComponent() {
             await updateOfflineStore(Number(storeNo), updatedStore);
             alert("매장이 성공적으로 수정되었습니다.");
             navigate("/offlinestore");
-        } catch (error: any) {
-            console.error("Failed to update offline store:", error.message);
+        } catch (error) {
+            console.error("Failed to update offline store:", error);
             alert("매장 수정에 실패했습니다.");
         }
     };
@@ -119,8 +119,8 @@ function OfflineStoreEditComponent() {
                 await deleteOfflineStore(Number(storeNo));
                 alert("매장이 성공적으로 삭제되었습니다.");
                 navigate("/offlinestore");
-            } catch (error: any) {
-                console.error("Failed to delete offline store:", error.message);
+            } catch (error) {
+                console.error("Failed to delete offline store:", error);
                 alert("매장 삭제에 실패했습니다.");
             }
         }

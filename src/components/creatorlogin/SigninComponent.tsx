@@ -57,9 +57,9 @@ function SigninComponent() {
 
             // 로그인 성공 후, 메인 페이지로 리디렉션
             navigate("/main");
-        } catch (exception: any) {
+        } catch (exception) {
             // 로그인 실패 시 error 처리
-            console.error("로그인 실패:", exception.response?.data?.message || exception.message);
+            console.error("로그인 실패:", exception);
         }
     };
 
@@ -69,7 +69,7 @@ function SigninComponent() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-            <img className="w-28" src="/src/assets/img/logo.png" />
+            <img className="w-28" src="/img/logo.png" alt="Logo"/>
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg overflow-hidden p-8">
                 <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-8">관리자 로그인</h1>
 

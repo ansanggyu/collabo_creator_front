@@ -2,8 +2,8 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { registerOfflineStore } from "../../apis/offlinestore/offlineStoreAPI.ts";
-import { uploadImages } from "../../apis/image/imageUploadAPI.ts";
-import { useDaumPostcodePopup } from "react-daum-postcode";
+import { uploadS3Images } from "../../apis/image/imageUploadAPI.ts"; // 수정: 이미지 다중 업로드 API
+import {Address, useDaumPostcodePopup} from "react-daum-postcode";
 
 function OfflineStoreAddComponent() {
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ function OfflineStoreAddComponent() {
     const [storeZipcode, setStoreZipcode] = useState("");
     const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-    const handleAddressSelect = (data: any) => {
+    const handleAddressSelect = (data : Address) => {
         setStoreAddress(data.address);
         setStoreZipcode(data.zonecode);
     };
@@ -48,7 +48,7 @@ function OfflineStoreAddComponent() {
 
         try {
             // 이미지 업로드
-            const uploadedImageUrls = await uploadImages(imageFiles);
+            const uploadedImageUrls = await uploadS3Images(imageFiles);
 
             // 오프라인 매장 등록
             const storeData = {
@@ -62,8 +62,8 @@ function OfflineStoreAddComponent() {
             const storeId = await registerOfflineStore(creatorId, storeData);
             alert(`오프라인 매장이 성공적으로 등록되었습니다. (ID: ${storeId})`);
             navigate("/offlinestore");
-        } catch (error: any) {
-            console.error("Failed to register offline store:", error.message);
+        } catch (error) {
+            console.error("Failed to register offline store:", error);
             alert("오프라인 매장 등록에 실패했습니다.");
         }
     };

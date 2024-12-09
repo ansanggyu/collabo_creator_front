@@ -1,9 +1,9 @@
 import { lazy, Suspense } from "react";
-import LoadingPage from "../pages/common/LoadingPage.tsx";
-import OfflineStoreAddPage from "../pages/offlinemanagement/OfflineStoreAddPage.tsx";
-import OfflineStoreEditPage from "../pages/offlinemanagement/OfflineStoreEditPage.tsx";
 
+const LoadingPage = lazy(() => import("../pages/common/LoadingPage.tsx"));
 const OfflineBlogPage = lazy(() => import("../pages/offlinemanagement/OfflineManagementPage.tsx"));
+const OfflineStoreAddPage = lazy(() => import("../pages/offlinemanagement/OfflineStoreAddPage.tsx"));
+const OfflineStoreEditPage = lazy(() => import("../pages/offlinemanagement/OfflineStoreEditPage.tsx"));
 
 const OfflineManagementRouter = {
     path: "/offlinestore",
