@@ -37,6 +37,7 @@ export const refreshRequest = async (accessToken: string, refreshToken: string):
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/x-www-form-urlencoded'
+
             }
         }
     );
