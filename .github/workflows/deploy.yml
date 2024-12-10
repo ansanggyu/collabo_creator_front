@@ -25,7 +25,7 @@ jobs:
       # 3. EC2에 접속하여 배포 작업 수행
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@43.201.252.29 \
+          ssh -o StrictHostKeyChecking=no ec2-user@52.78.198.39 \
           "cd /home/ec2-user/collabo/collabo_creator_front && \
           git pull origin master && \
           docker-compose down && \
