@@ -14,6 +14,7 @@ export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> =>
                 }
             }
         );
+        console.log(host)
         return result.data;
     } catch (exception) {
         console.error("Signin API error:", exception);
