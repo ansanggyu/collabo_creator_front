@@ -1,7 +1,7 @@
 import jwtAxios from "../../util/jwtUtil";
 import { ICreator } from "../../types/icreator";
 
-const host = `${import.meta.env.VITE_HOST_IP}`+'mypage';
+const host = 'http://localhost:8080/api/mypage';
 
 export const getMyPage = async (creatorId: string): Promise<ICreator> => {
     try {

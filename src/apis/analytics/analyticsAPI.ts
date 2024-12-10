@@ -1,7 +1,7 @@
 import {ICreatorAnalytics, IProductStats, IRefundNCancel} from "../../types/iproduct.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = `${import.meta.env.VITE_HOST_IP}`;
+const host = 'http://localhost:8080/api';
 
 export const getCreatorAnalytics = async (
     creatorId: string,

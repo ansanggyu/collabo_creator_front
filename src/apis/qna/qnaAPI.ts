@@ -2,7 +2,7 @@ import jwtAxios from "../../util/jwtUtil.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IQnA } from "../../types/iqna.ts";
 
-const host = `${import.meta.env.VITE_HOST_IP}`+'/qna';
+const host = 'http://localhost:8080/api/qna';
 
 export const getQnAList = async (
     page?: number,

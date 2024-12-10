@@ -2,7 +2,7 @@ import jwtAxios from "../../util/jwtUtil.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IOrder } from "../../types/iorder.ts";
 
-const host = `${import.meta.env.VITE_HOST_IP}`+'/order';
+const host = 'http://localhost:8080/api/order';
 
 // 주문 리스트 가져오기
 export const getOrderList = async (

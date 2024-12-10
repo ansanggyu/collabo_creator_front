@@ -1,7 +1,7 @@
 import {ICreatorlogin, ISigninParam} from "../../types/icreatorlogin.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = 'http://localhost:8080/creatorlogin'
+const host = 'http://localhost:8080/api/creatorlogin'
 
 export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> => {
     try {

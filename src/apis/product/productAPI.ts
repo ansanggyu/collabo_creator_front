@@ -2,7 +2,7 @@ import jwtAxios from "../../util/jwtUtil.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IProduct, IProductRequest } from "../../types/iproduct.ts";
 
-const host = `${import.meta.env.VITE_HOST_IP}`+'/product';
+const host = 'http://localhost:8080/api/product';
 
 export const productImageUpload = async (
     productNo: number,
