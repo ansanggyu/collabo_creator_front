@@ -20,7 +20,7 @@ export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> =>
         console.error("Signin API error:", exception);
         const errorMessage = exception || "An unknown error occurred.";
         console.error("Error message:", errorMessage);
-        window.location.href = "/login?error=incorrect";
+        //window.location.href = "/login?error=incorrect";
         throw exception;
     }
 }
