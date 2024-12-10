@@ -1,7 +1,7 @@
 import jwtAxios from "../../util/jwtUtil.ts";
 import { IOfflineStore } from "../../types/iofflinestore.ts";
 
-const host = `${import.meta.env.HOST_IP}`+'/offlinestore';
+const host = `${import.meta.env.VITE_HOST_IP}`+'/offlinestore';
 
 export const getOfflineStoreList = async (creatorId: string): Promise<IOfflineStore[]> => {
     try {
