@@ -6,8 +6,10 @@ const host1 = import.meta.env.VITE_HOST_IP
 console.log("----------------------------------")
 console.log(host1)
 
-const host = `${host1}/creatorlogin`
+const host = "www.mymystore.store/api/creatorlogin"
+//const host = `${host1}/creatorlogin`
 //const host= "https://43.201.252.29:8080/api/creatorlogin"
+
 
 console.log(host)
 
