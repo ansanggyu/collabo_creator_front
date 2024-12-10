@@ -10,7 +10,6 @@ services:
     env_file:
       - .env
 
-
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower

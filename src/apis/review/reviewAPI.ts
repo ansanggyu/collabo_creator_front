@@ -2,7 +2,7 @@ import jwtAxios from "../../util/jwtUtil.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IReview } from "../../types/ireview.ts";
 
-const host = "http://localhost:8080/api/review";
+const host = `${import.meta.env.HOST_IP}`+'/review';
 
 export const getReviewList = async (
     page?: number,
