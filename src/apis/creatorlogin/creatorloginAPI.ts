@@ -1,10 +1,10 @@
 import {ICreatorlogin, ISigninParam} from "../../types/icreatorlogin.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
- const host = import.meta.env.VITE_HOST_IP
-//
-// console.log("----------------------------------")
-// console.log(host1)
+ const host = `${import.meta.env.VITE_HOST_IP}/creatorlogin`
+
+ console.log("----------------------------------")
+ console.log(host)
 
 //const host = "https://www.mymystore.store/api/creatorlogin"
 //const host = `${host1}/creatorlogin`
