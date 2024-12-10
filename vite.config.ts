@@ -8,7 +8,14 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    port: 5173,
+    proxy: {
+      '/api' : {
+        target: 'http://43.201.252.29:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/,''),
+      },
+    },
+    // port: 5173,
     host: true,
   },
 });
