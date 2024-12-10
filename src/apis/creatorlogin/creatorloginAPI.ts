@@ -4,6 +4,7 @@ import jwtAxios from "../../util/jwtUtil.ts";
 // const host = `${import.meta.env.VITE_HOST_IP}/creatorlogin`
 const host= "https://43.201.252.29:8080/api/creatorlogin"
 
+
 export const postSignin = async (param: ISigninParam): Promise<ICreatorlogin> => {
     try {
         const result = await jwtAxios.post<ICreatorlogin>(
