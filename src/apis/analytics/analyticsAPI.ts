@@ -1,15 +1,13 @@
 import {ICreatorAnalytics, IProductStats, IRefundNCancel} from "../../types/iproduct.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = `${import.meta.env.VITE_HOST_IP}`;
-
 export const getCreatorAnalytics = async (
     creatorId: string,
     startDate: string,
     endDate: string
 ): Promise<ICreatorAnalytics[]> => {
     try {
-        const result = await jwtAxios.get<ICreatorAnalytics[]>(`${host}/statistics`, {
+        const result = await jwtAxios.get<ICreatorAnalytics[]>(`/statistics`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -36,7 +34,7 @@ export const getProductStats = async (
     searchTerm?: string // 검색어 필터 추가
 ): Promise<IProductStats[]> => {
     try {
-        const result = await jwtAxios.get<IProductStats[]>(`${host}/statistics/product`, {
+        const result = await jwtAxios.get<IProductStats[]>(`/statistics/product`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -62,7 +60,7 @@ export const getRefundStats = async (
     endDate: string
 ): Promise<IRefundNCancel[]> => {
     try {
-        const result = await jwtAxios.get<IRefundNCancel[]>(`${host}/refundncancel`, {
+        const result = await jwtAxios.get<IRefundNCancel[]>(`/refundncancel`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
