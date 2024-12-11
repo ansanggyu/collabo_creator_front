@@ -44,9 +44,9 @@ function ProductListComponent() {
     // 상단 통계 데이터 계산
     const statistics = {
         totalProducts: pageResponse.totalCount || 0,
-        activeProducts: pageResponse.dtoList?.filter((p) => p.productStatus === "판매중").length || 0,
-        inactiveProducts: pageResponse.dtoList?.filter((p) => p.productStatus === "판매중지").length || 0,
-        outOfStock: pageResponse.dtoList?.filter((p) => p.productStatus === "품절").length || 0,
+        activeProducts: pageResponse.dtoList.filter((p) => p.productStatus === "판매중").length,
+        inactiveProducts: pageResponse.dtoList.filter((p) => p.productStatus === "판매중지").length,
+        outOfStock: pageResponse.dtoList.filter((p) => p.productStatus === "품절").length,
     };
 
     // 카테고리 데이터 가져오기
@@ -55,11 +55,7 @@ function ProductListComponent() {
             if (!creatorId) return;
             try {
                 const result = await getCategoriesByCreator(creatorId);
-                if (Array.isArray(result)) {
-                    setCategories(result);
-                } else {
-                    console.error("카테고리 데이터 형식이 잘못되었습니다:", result);
-                }
+                setCategories(result);
             } catch (error) {
                 console.error("카테고리 불러오기 실패:", error);
             }
@@ -87,38 +83,9 @@ function ProductListComponent() {
                     productStatusMapping[selectedStatus]?.toString() || undefined,
                     selectedCategory ?? undefined
                 );
-                console.log("상품 API 응답 데이터:", response);
-                if (response && response.dtoList) {
-                    setPageResponse(response);
-                } else {
-                    console.error("응답 데이터가 올바르지 않습니다:", response);
-                    setPageResponse({
-                        dtoList: [],
-                        pageNumList: [],
-                        pageRequestDTO: { page: 1, size: 10 },
-                        prev: false,
-                        next: false,
-                        totalCount: 0,
-                        prevPage: 0,
-                        nextPage: 0,
-                        current: 1,
-                        totalPage: 1,
-                    });
-                }
+                setPageResponse(response);
             } catch (error) {
                 console.error("상품 데이터 불러오기 실패:", error);
-                setPageResponse({
-                    dtoList: [],
-                    pageNumList: [],
-                    pageRequestDTO: { page: 1, size: 10 },
-                    prev: false,
-                    next: false,
-                    totalCount: 0,
-                    prevPage: 0,
-                    nextPage: 0,
-                    current: 1,
-                    totalPage: 1,
-                });
             } finally {
                 setLoading(false);
             }

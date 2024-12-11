@@ -1,6 +1,6 @@
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = `api/images`;
+const host = `/api/images`;
 
 export const uploadS3Images = async (imageFiles: File[]): Promise<string[]> => {
     const formData = new FormData();

@@ -2,7 +2,7 @@ import jwtAxios from "../../util/jwtUtil.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
 import { IProduct, IProductRequest } from "../../types/iproduct.ts";
 
-const host = 'api/product';
+const host = '/api/product';
 
 export const productImageUpload = async (
     productNo: number,

@@ -1,7 +1,7 @@
 import jwtAxios from "../../util/jwtUtil.ts";
 import { IOfflineStore } from "../../types/iofflinestore.ts";
 
-const host = 'api/offlinestore';
+const host = '/api/offlinestore';
 
 export const getOfflineStoreList = async (creatorId: string): Promise<IOfflineStore[]> => {
     try {
