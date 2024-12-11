@@ -7,7 +7,7 @@ export const getCreatorAnalytics = async (
     endDate: string
 ): Promise<ICreatorAnalytics[]> => {
     try {
-        const result = await jwtAxios.get<ICreatorAnalytics[]>(`/statistics`, {
+        const result = await jwtAxios.get<ICreatorAnalytics[]>(`api/statistics`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -34,7 +34,7 @@ export const getProductStats = async (
     searchTerm?: string // 검색어 필터 추가
 ): Promise<IProductStats[]> => {
     try {
-        const result = await jwtAxios.get<IProductStats[]>(`/statistics/product`, {
+        const result = await jwtAxios.get<IProductStats[]>(`api/statistics/product`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,
@@ -60,7 +60,7 @@ export const getRefundStats = async (
     endDate: string
 ): Promise<IRefundNCancel[]> => {
     try {
-        const result = await jwtAxios.get<IRefundNCancel[]>(`/refundncancel`, {
+        const result = await jwtAxios.get<IRefundNCancel[]>(`api/refundncancel`, {
             params: {
                 creatorId,
                 startDate: `${startDate}T00:00:00`,

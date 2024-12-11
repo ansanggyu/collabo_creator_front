@@ -1,7 +1,7 @@
 import {IUserCategory} from "../../types/iproduct.ts";
 import jwtAxios from "../../util/jwtUtil.ts";
 
-const host = '/product';
+const host = 'api/product';
 
 export const getCategoriesByCreator = async (creatorId: string): Promise<IUserCategory[]> => {
     try {

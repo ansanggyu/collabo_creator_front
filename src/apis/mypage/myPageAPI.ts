@@ -1,7 +1,7 @@
 import jwtAxios from "../../util/jwtUtil";
 import { ICreator } from "../../types/icreator";
 
-const host = 'mypage';
+const host = 'api/mypage';
 
 export const getMyPage = async (creatorId: string): Promise<ICreator> => {
     try {
