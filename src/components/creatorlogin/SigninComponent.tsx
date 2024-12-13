@@ -69,7 +69,7 @@ function SigninComponent() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-            <img className="w-28" src="/img/logo.png" alt="Logo"/>
+            <img src="/img/collabori.png" alt="Logo" className="w-64 h-auto mx-auto"/>
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg overflow-hidden p-8">
                 <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-8">관리자 로그인</h1>
 
