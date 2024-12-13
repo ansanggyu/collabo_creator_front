@@ -69,7 +69,7 @@ function AsideMenuComponent() {
             <div className="py-4 text-neutral-800">
                 {/* 로고 및 대시보드 메뉴 */}
                 <Link to="/main" className="flex items-center justify-center mb-4 p-2">
-                    <img src="/img/logo.png" alt="Logo" className="px-16" />
+                    <img src="/img/collabori.png" alt="Logo" className="px-16" />
                 </Link>
                 {/* Depth1 메뉴 */}
                 <ul className="mt-4 space-y-2 text-txt-grey">
