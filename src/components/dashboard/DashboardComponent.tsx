@@ -36,7 +36,8 @@ ChartJS.register(
 );
 
 const DashboardComponent = () => {
-    const creatorId = useSelector((state: RootState) => state.signin.creatorId);
+    const creatorId = useSelector((state: RootState) => state.signin.creatorId)
+    const creatorName = useSelector((state: RootState) => state.signin.creatorName)
 
     const [products, setProducts] = useState<IProduct[]>([]);
     const [orders, setOrders] = useState<IOrder[]>([]);
@@ -120,7 +121,7 @@ const DashboardComponent = () => {
             {/* 환영 메시지 */}
             <div className="mb-6 p-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold">
-                    {creatorId ? `${creatorId}님, 환영합니다!` : "환영합니다!"}
+                    {creatorName ? `${creatorName}님, 환영합니다!` : "환영합니다!"}
                 </h1>
                 <p className="text-sm">대시보드를 통해 데이터를 확인하세요.</p>
             </div>
