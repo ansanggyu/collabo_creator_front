@@ -38,7 +38,7 @@ ChartJS.register(
 const DashboardComponent = () => {
     const creatorId = useSelector((state: RootState) => state.signin.creatorId)
     const creatorName = useSelector((state: RootState) => state.signin.creatorName)
-    console.log(creatorName)
+    console.log("-----------------------",creatorName)
 
     const [products, setProducts] = useState<IProduct[]>([]);
     const [orders, setOrders] = useState<IOrder[]>([]);
