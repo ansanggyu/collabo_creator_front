@@ -205,12 +205,11 @@ function AddProductComponent() {
                 </div>
 
                 {/* 카테고리 등록 버튼 */}
-                <div>
+                <div className="text-right mt-2">
                     <button
                         type="button" // 버튼이 폼 제출을 방지
                         onClick={() => navigate("/category/add")} // 이동 로직
-                        className="mt-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-                    >
+                        className="px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200">
                         카테고리 등록
                     </button>
                 </div>
