@@ -81,9 +81,11 @@ function ProductListComponent() {
                     creatorId,
                     searchQuery.trim() || undefined,
                     productStatusMapping[selectedStatus]?.toString() || undefined,
-                    selectedCategory ?? undefined
+                    selectedCategory ?? undefined,
+
                 );
                 setPageResponse(response);
+                console.log("상품리스트 api 반환 로그: ",response)
             } catch (error) {
                 console.error("상품 데이터 불러오기 실패:", error);
             } finally {

@@ -4,56 +4,6 @@ import { IProduct, IProductRequest } from "../../types/iproduct.ts";
 
 const host = '/api/product';
 
-export const productImageUpload = async (
-    productNo: number,
-    imageDTOs: { productImageUrl: string; productImageOrd: number }[]
-): Promise<{ productImageUrl: string; productImageOrd: number }[]> => {
-    try {
-        const result = await jwtAxios.post<{ productImageUrl: string; productImageOrd: number }[]>(`${host}/img`, imageDTOs, {
-            params: { productNo },
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (result.status !== 200) {
-            throw new Error("Failed to upload product images");
-        }
-
-        return result.data;
-    } catch (error) {
-        if (error) {
-            console.error("Axios Error:", error);
-        } else {
-            console.error("Unexpected Error:", error);
-        }
-        throw new Error("An error occurred while uploading the product images.");
-    }
-};
-
-export const productImageDelete = async (imageId: number): Promise<void> => {
-    try {
-        const result = await jwtAxios.delete(`${host}/img/${imageId}`, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (result.status !== 200) {
-            throw new Error("Failed to delete product image");
-        }
-
-        console.log(`Image with ID ${imageId} successfully deleted.`);
-    } catch (error) {
-        if (error) {
-            console.error("Axios Error:", error);
-        }
-        throw new Error("An error occurred while deleting the product image.");
-    }
-};
-
-
-
 export const addProduct = async (productData: IProductRequest): Promise<void> => {
     try {
         const result = await jwtAxios.post(`${host}/add`, productData, {
@@ -80,7 +30,7 @@ export const getProductList = async (
     creatorId: string,
     searchQuery?: string,
     selectedStatus?: string,
-    selectedCategory?: number
+    selectedCategory?: number,
 ): Promise<IPageResponse<IProduct>> => {
     const params: Record<string, unknown> = {
         page: page || 1,
