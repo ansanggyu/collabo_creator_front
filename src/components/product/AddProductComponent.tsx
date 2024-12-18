@@ -202,7 +202,11 @@ function AddProductComponent() {
                         ))}
                     </select>
                 </div>
-                <AddCategoryRedirect/>
+
+                {/* 카테고리 등록 버튼 */}
+                <div>
+                    <AddCategoryRedirect />
+                </div>
 
                 {/* 이미지 업로드 */}
                 <div>
@@ -263,6 +267,7 @@ function AddProductComponent() {
             </form>
         </div>
     );
+
 }
 
 export default AddProductComponent;
