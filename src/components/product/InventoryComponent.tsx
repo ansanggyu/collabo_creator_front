@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
-import { IProduct, IUserCategory } from "../../types/iproduct";
+import { IProductList, IUserCategory} from "../../types/iproduct";
 import { getProductList } from "../../apis/product/productAPI";
 import { IPageResponse } from "../../types/ipageresponse";
 import PageComponent from "../common/PageComponent.tsx";
@@ -16,7 +16,7 @@ const productStatusMapping: Record<string, number | null> = {
     "품절": 3,
 };
 
-const initialState: IPageResponse<IProduct> = {
+const initialState: IPageResponse<IProductList> = {
     dtoList: [],
     pageNumList: [],
     pageRequestDTO: { page: 1, size: 10 },
@@ -36,7 +36,7 @@ function InventoryComponent() {
     const page: number = Number(query.get("page")) || 1;
     const size: number = Number(query.get("size")) || 10;
 
-    const [pageResponse, setPageResponse] = useState<IPageResponse<IProduct>>(initialState);
+    const [pageResponse, setPageResponse] = useState<IPageResponse<IProductList>>(initialState);
     const [categories, setCategories] = useState<IUserCategory[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>(""); // 상품명 검색
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // 카테고리 필터
@@ -99,7 +99,7 @@ function InventoryComponent() {
     }, [page, size, creatorId, searchQuery, selectedStatus, selectedCategory]);
 
     // 상품 리스트 요소 생성
-    const productListLI = pageResponse.dtoList.map((product: IProduct) => {
+    const productListLI = pageResponse.dtoList.map((product: IProductList) => {
         const { productNo, categoryName, productName, createdAt, stock } = product;
 
         return (

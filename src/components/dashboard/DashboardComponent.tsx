@@ -18,7 +18,7 @@ import { getProductList } from "../../apis/product/productAPI";
 import { getOrderList } from "../../apis/order/orderAPI";
 import { getReviewList } from "../../apis/review/reviewAPI";
 import { getCreatorAnalytics, getRefundStats } from "../../apis/analytics/analyticsAPI";
-import { IProduct } from "../../types/iproduct";
+import { IProductList} from "../../types/iproduct";
 import { IOrder } from "../../types/iorder";
 import { IReview } from "../../types/ireview";
 
@@ -38,7 +38,7 @@ ChartJS.register(
 const DashboardComponent = () => {
     const creatorId = useSelector((state: RootState) => state.signin.creatorId);
 
-    const [products, setProducts] = useState<IProduct[]>([]);
+    const [products, setProducts] = useState<IProductList[]>([]);
     const [orders, setOrders] = useState<IOrder[]>([]);
     const [reviews, setReviews] = useState<IReview[]>([]);
     const [labels, setLabels] = useState<string[]>([]);

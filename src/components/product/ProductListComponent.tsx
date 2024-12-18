@@ -5,7 +5,7 @@ import PageComponent from "../common/PageComponent.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
-import { IProductList, IUserCategory } from "../../types/iproduct.ts";
+import { IProductList, IUserCategory} from "../../types/iproduct.ts";
 import { getCategoriesByCreator } from "../../apis/category/categoryAPI.ts";
 
 const productStatusMapping: Record<string, number | null> = {
