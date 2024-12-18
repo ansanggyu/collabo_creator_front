@@ -1,6 +1,6 @@
 import jwtAxios from "../../util/jwtUtil.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
-import { IProduct, IProductRequest } from "../../types/iproduct.ts";
+import {IProduct, IProductList, IProductRequest} from "../../types/iproduct.ts";
 
 const host = '/api/product';
 
@@ -31,7 +31,7 @@ export const getProductList = async (
     searchQuery?: string,
     selectedStatus?: string,
     selectedCategory?: number,
-): Promise<IPageResponse<IProduct>> => {
+): Promise<IPageResponse<IProductList>> => {
     const params: Record<string, unknown> = {
         page: page || 1,
         size: size || 10,
@@ -42,7 +42,7 @@ export const getProductList = async (
     if (selectedStatus && selectedStatus !== "전체") params.status = selectedStatus;
     if (selectedCategory !== null && selectedCategory !== undefined) params.categoryNo = selectedCategory;
 
-    const res = await jwtAxios.get<IPageResponse<IProduct>>(`${host}/list`, { params });
+    const res = await jwtAxios.get<IPageResponse<IProductList>>(`${host}/list`, { params });
 
     return res.data;
 };

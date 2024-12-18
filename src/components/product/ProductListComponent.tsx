@@ -5,7 +5,7 @@ import PageComponent from "../common/PageComponent.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
 import { IPageResponse } from "../../types/ipageresponse.ts";
-import { IProduct, IUserCategory } from "../../types/iproduct.ts";
+import { IProductList, IUserCategory } from "../../types/iproduct.ts";
 import { getCategoriesByCreator } from "../../apis/category/categoryAPI.ts";
 
 const productStatusMapping: Record<string, number | null> = {
@@ -21,7 +21,7 @@ function ProductListComponent() {
 
     const creatorId = useSelector((state: RootState) => state.signin.creatorId);
 
-    const [pageResponse, setPageResponse] = useState<IPageResponse<IProduct>>({
+    const [pageResponse, setPageResponse] = useState<IPageResponse<IProductList>>({
         dtoList: [],
         pageNumList: [],
         pageRequestDTO: { page: 1, size: 10 },
@@ -195,9 +195,9 @@ function ProductListComponent() {
                             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
                         >
                             <div className="h-48 bg-gray-200 flex items-center justify-center">
-                                {product.productImages?.length > 0 ? (
+                                {product.productImageUrl?.length > 0 ? (
                                     <img
-                                        src={product.productImages[0].productImageUrl}
+                                        src={product.productImageUrl[0]}
                                         alt={product.productName}
                                         className="w-full h-full object-cover"
                                     />
@@ -243,7 +243,7 @@ function ProductListComponent() {
             </div>
 
             {/* 페이지네이션 */}
-            {pageResponse && <PageComponent<IProduct> pageResponse={pageResponse} />}
+            {pageResponse && <PageComponent<IProductList> pageResponse={pageResponse} />}
         </div>
     );
 }

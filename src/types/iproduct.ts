@@ -18,6 +18,24 @@ export interface IProduct{
 
 }
 
+export interface IProductList{
+    productNo : number,
+    productName : string,
+    productPrice : number,
+    stock : number,
+    rating ?: number,
+    productDescription : string,
+    productStatus :string,
+    createdAt : string,
+
+    categoryNo : number,
+    categoryName : string,
+
+    creatorName : string,
+
+    productImageUrl: string[];
+}
+
 export interface IProductRequest {
     productNo?: number;
     productName: string;
