@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store.ts";
 import {uploadS3Images} from "../../apis/image/imageUploadAPI.ts";
 import {getCategoriesByCreator} from "../../apis/category/categoryAPI.ts";
-import AddCategoryRedirect from "../category/AddCategoryRedirect.tsx";
+import {useNavigate} from "react-router-dom";
 
 const initialState: IProductRequest = {
     productNo: 0,
@@ -28,6 +28,7 @@ function AddProductComponent() {
     const [categories, setCategories] = useState<IUserCategory[]>([]);
     const [imageFiles, setImageFiles] = useState<(File | undefined)[]>(Array(6).fill(undefined)); // 이미지 최대 6개
     const [previewImages, setPreviewImages] = useState<(string | undefined)[]>(Array(6).fill(undefined)); // Base64 미리보기
+    const navigate = useNavigate()
 
     const creatorId = useSelector((state: RootState) => state.signin.creatorId);
 
@@ -205,7 +206,13 @@ function AddProductComponent() {
 
                 {/* 카테고리 등록 버튼 */}
                 <div>
-                    <AddCategoryRedirect />
+                    <button
+                        type="button" // 버튼이 폼 제출을 방지
+                        onClick={() => navigate("/category/add")} // 이동 로직
+                        className="mt-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                    >
+                        카테고리 등록
+                    </button>
                 </div>
 
                 {/* 이미지 업로드 */}
