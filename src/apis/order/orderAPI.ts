@@ -36,7 +36,7 @@ export const updateOrderStatus = async (
     newStatus: string
 ): Promise<void> => {
     try {
-        const res = await jwtAxios.patch<void>(`/api/order/${orderNo}/status`, null, { // body 제거
+        const res = await jwtAxios.put<void>(`/api/order/${orderNo}/status`, null, { // body 제거
             params: { creatorId, status: newStatus }, // status를 params로 전달
         });
         return res.data; // 성공적으로 처리되면 API의 응답을 반환
