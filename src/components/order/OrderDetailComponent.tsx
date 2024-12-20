@@ -15,10 +15,9 @@ function OrderDetailComponent({ orderId, onClose }: OrderDetailProps) {
     const [newStatus, setNewStatus] = useState<string>("");
 
     const orderStatusOptions = [
-        { value: "1", label: "입금대기" },
-        { value: "2", label: "배송 준비 처리" },
-        { value: "3", label: "발송 처리" },
-        { value: "4", label: "환불 처리" },
+        { value: "PENDING", label: "배송 준비 처리" },
+        { value: "COMPLETED", label: "발송 처리" },
+        { value: "CANCELED", label: "환불 처리" },
     ];
 
     // 쿠키에서 creatorId 가져오기
